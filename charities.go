@@ -1,18 +1,28 @@
 package main
 
-import ()
+import (
+	"encoding/json"
+	"github.com/gorilla/mux"
+	"log"
+	"net/http"
+	"strconv"
+	"time"
+)
 
 type Charity struct {
-	ID      string `json:"id,omitempty"`
-	Name    string `json:"name,omitempty"`
-	Address string `json:"address,omitempty"`
-	EIN     string `json:"ein,omitempty"`
-	Website string `json:"website,omitempty"`
+	ID        uint64 `gorm:"primary_key"`
+	CreatedAt time.Time
+	UpdatedAt time.Time
+	DeletedAt *time.Time
+	Name      string `json:"name,omitempty"`
+	Address   string `json:"address,omitempty"`
+	EIN       string `json:"ein,omitempty"`
+	Website   string `json:"website,omitempty"`
 }
 
 func GetCharities(w http.ResponseWriter, r *http.Request) {
 	var charities []Charity
-	if err := orm.GetAll(&charities, ""); err != nil {
+	if err := db.Find(&charities).Error; err != nil {
 		log.Println(err)
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
@@ -23,15 +33,14 @@ func GetCharities(w http.ResponseWriter, r *http.Request) {
 
 func GetCharity(w http.ResponseWriter, r *http.Request) {
 	params := mux.Vars(r)
-
-	var charity Charity
-	if err := orm.Get(&charity, "id = ?", params["id"]); err != nil {
-		log.Println(err)
-		http.Error(w, err.Error(), http.StatusInternalServerError)
+	id, err := strconv.ParseUint(params["id"], 10, 64)
+	if err != nil {
+		http.Error(w, err.Error(), http.StatusBadRequest)
 		return
 	}
 
-	if charity == nil {
+	var charity Charity
+	if db.Where("id = ?", id).First(&charity).RecordNotFound() {
 		http.NotFound(w, r)
 		return
 	}

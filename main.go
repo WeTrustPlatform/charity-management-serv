@@ -1,35 +1,43 @@
 package main
 
 import (
-	"encoding/json"
-	"github.com/astaxie/goorm"
+	"fmt"
 	"github.com/gorilla/mux"
+	"github.com/jinzhu/gorm"
+	_ "github.com/jinzhu/gorm/dialects/postgres"
 	"github.com/subosito/gotenv"
 	"log"
 	"net/http"
 )
 
-var orm ORM
-
-func initDB() ORM {
-	orm := goorm.NewORM(
-		os.Getenv("DATABASE_HOST"),
-		os.Getenv("DATABASE_PORT"),
-		os.Getenv("DATABASE_NAME"),
-		os.Getenv("DATABASE_USERNAME"),
-		os.Getenv("DATABASE_PASSWORD"),
-		"utf8")
-	return orm
-}
-
 // Load .env variables
-// Init db
 func init() {
 	gotenv.Load()
-	orm := initDB()
 }
 
+var db *gorm.DB
+var err error
+
 func main() {
+	var (
+		dbHost     = getEnv("DB_HOST", "localhost")
+		dbPort     = getEnv("DB_PORT", "5432")
+		dbUser     = getEnv("DB_USER", "postgres")
+		dbPassword = getEnv("DB_PASSWORD", "")
+		dbName     = getEnv("DB_NAME", "development")
+	)
+
+	psqlConnectionString := fmt.Sprintf("host=%s port=%s user=%s "+
+		"password=%s dbname=%s sslmode=disable",
+		dbHost, dbPort, dbUser, dbPassword, dbName)
+
+	db, err = gorm.Open("postgres", psqlConnectionString)
+	if err != nil {
+		panic("failed to connect database")
+	}
+	defer db.Close()
+	db.AutoMigrate(&Charity{})
+
 	router := mux.NewRouter()
 	router.HandleFunc("/charities", GetCharities).Methods("GET")
 	router.HandleFunc("/charities/{id}", GetCharity).Methods("GET")
