@@ -9,17 +9,20 @@ Provide RESTful endpoints to access all the 501c3 organizations information.
 ### Getting started
 - Install [go](https://golang.org/) and [dep](https://golang.github.io/dep/docs/installation.html) using methods of your choice.  They are available in most of Linux package repositories.
 - Install [postgres](https://www.postgresql.org/download/).
-- Create your `.env` variables:
-```
-export PORT=
-export DB_HOST=
-export DB_PORT=
-export DB_USER=
-export DB_PASSWORD=
-export DB_NAME=
-```
 - Install dependencies `make dep`.
-- (Optional) Seed database `make seeder`.
+- (Optional) Create your `.env` variables for your local configs. The default is:
+```
+export PORT=8001
+export DB_HOST=localhost
+export DB_PORT=5432
+export DB_USER=postgres
+export DB_PASSWORD=
+export DB_NAME=development
+```
+- (Optional) Seed database:
+  * Download pub78 data at [irs](https://www.irs.gov/charities-non-profits/tax-exempt-organization-search-bulk-data-downloads).
+  * Move the `.txt` to `seed/data.txt`.
+  * `make seeder`.
 - Launch the dev server `make server`.
 
 
