@@ -17,13 +17,15 @@ type Charity struct {
 	CreatedAt         time.Time  `json:"created_at,omitempty"`
 	UpdatedAt         time.Time  `json:"updated_at,omitempty"`
 	DeletedAt         *time.Time `json:"deleted_at,omitempty"`
-	Name              string     `json:"name,omitempty"`
-	City              string     `json:"city,omitempty"`
-	State             string     `json:"state,omitempty"`
-	Country           string     `json:"country,omitempty"`
-	EIN               string     `json:"ein,omitempty"`
-	DeductibilityCode string     `json:"deductibility_code,omitempty"`
-	Website           string     `json:"website,omitempty"`
+	Name              string     `json:"name,omitempty"`               // pub78
+	City              string     `json:"city,omitempty"`               // pub78
+	State             string     `json:"state,omitempty"`              // pub78
+	Country           string     `json:"country,omitempty"`            // pub78
+	EIN               string     `json:"ein,omitempty"`                // pub78
+	DeductibilityCode string     `json:"deductibility_code,omitempty"` // pub78
+	Website           string     `json:"website,omitempty"`            // optional
+	Address           string     `json:"address,omitempty"`            // optional
+	ContactInfo       string     `json:"contact_info,omitempty"`       // optional
 }
 
 // GetCharities returns all charities in the http response
