@@ -19,7 +19,8 @@ export DB_PASSWORD=
 export DB_NAME=
 ```
 - Install dependencies `make dep`.
-- Launch the dev server `make run`.
+- (Optional) Seed database `make seeder`.
+- Launch the dev server `make server`.
 
 
 ### License
