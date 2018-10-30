@@ -53,5 +53,6 @@ func main() {
 	router := mux.NewRouter()
 	router.HandleFunc("/charities", GetCharities).Methods("GET")
 	router.HandleFunc("/charities/{id}", GetCharity).Methods("GET")
+	log.Println("Listening on http://localhost:8001")
 	log.Fatal(http.ListenAndServe(":8001", router))
 }
