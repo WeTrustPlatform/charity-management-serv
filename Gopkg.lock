@@ -2,6 +2,14 @@
 
 
 [[projects]]
+  branch = "master"
+  digest = "1:002e33e838777c9938b8cd3af52750ef6c35713b311f2e3f2640c799669f808c"
+  name = "github.com/astaxie/goorm"
+  packages = ["."]
+  pruneopts = "UT"
+  revision = "d35780c0d3cefa6f6171add5a864e7948e7fee8b"
+
+[[projects]]
   digest = "1:c79fb010be38a59d657c48c6ba1d003a8aa651fa56b579d959d74573b7dff8e1"
   name = "github.com/gorilla/context"
   packages = ["."]
@@ -18,6 +26,17 @@
   version = "v1.6.2"
 
 [[projects]]
+  digest = "1:47e5d86eca428b1ef843117e3da1ec25547ee9ed50ffe93284cc77837504b28b"
+  name = "github.com/mikespook/mymysql"
+  packages = [
+    "mysql",
+    "native",
+  ]
+  pruneopts = "UT"
+  revision = "2eec962338c7168d8e18532f02801fdf2c4d0a3d"
+  version = "v0.4.7"
+
+[[projects]]
   digest = "1:bb0d999fbfbc40f7bf42a24eca5e6894fa24a9efdad13d6908bea34bc3309722"
   name = "github.com/subosito/gotenv"
   packages = ["."]
@@ -25,10 +44,19 @@
   revision = "69b5b6104433beb2cb9c3ce00bdadf3c7c2d3f34"
   version = "v1.1.1"
 
+[[projects]]
+  digest = "1:d0b7a4ec30c50048d1e3f02d7e340c18983ddf291b9626a834c3d1d433a334db"
+  name = "github.com/ziutek/mymysql"
+  packages = ["mysql"]
+  pruneopts = "UT"
+  revision = "e08c2f35356576b3c3690c252fe5dca728ae9292"
+  version = "v1.5.4"
+
 [solve-meta]
   analyzer-name = "dep"
   analyzer-version = 1
   input-imports = [
+    "github.com/astaxie/goorm",
     "github.com/gorilla/mux",
     "github.com/subosito/gotenv",
   ]
