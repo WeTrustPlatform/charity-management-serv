@@ -15,10 +15,7 @@ func init() {
 	gotenv.Load()
 }
 
-var db *gorm.DB
-var err error
-
-func main() {
+func connectDB() *gorm.DB {
 	var (
 		dbHost     = getEnv("DB_HOST", "localhost")
 		dbPort     = getEnv("DB_PORT", "5432")
@@ -31,10 +28,18 @@ func main() {
 		"password=%s dbname=%s sslmode=disable",
 		dbHost, dbPort, dbUser, dbPassword, dbName)
 
-	db, err = gorm.Open("postgres", psqlConnectionString)
+	db, err := gorm.Open("postgres", psqlConnectionString)
 	if err != nil {
 		panic("failed to connect database")
 	}
+	return db
+}
+
+var db *gorm.DB
+var err error
+
+func main() {
+	db = connectDB()
 	defer db.Close()
 	db.AutoMigrate(&Charity{})
 
