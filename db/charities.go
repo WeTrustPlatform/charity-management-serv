@@ -31,15 +31,20 @@ type Charity struct {
 
 // GetCharities returns all charities in the http response
 func GetCharities(w http.ResponseWriter, r *http.Request) {
-	var charities []Charity
+	query := r.URL.Query()
+	page := query.Get("page")
+	if len(page) == 0 {
+		page = "1"
+	}
 
 	paginator := p.Paginator{
 		DB:      dbInstance,
 		OrderBy: []string{"Name ASC"},
-		Page:    "1",                           // TODO fix me.
+		Page:    page,
 		PerPage: util.GetEnv("PER_PAGE", "10"), // Don't want clients to load all records
 	}
 
+	var charities []Charity
 	results := paginator.Paginate(&charities)
 	json.NewEncoder(w).Encode(results)
 }
