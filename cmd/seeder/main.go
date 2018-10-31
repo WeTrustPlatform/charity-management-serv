@@ -10,5 +10,5 @@ func main() {
 	defer dbInstance.Close()
 	dbInstance.AutoMigrate(&db.Charity{})
 
-	seed.Populate(dbInstance)
+	seed.Populate(dbInstance, false)
 }
