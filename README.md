@@ -28,9 +28,15 @@ export DB_NAME=development
 - (Optional) Seed database:
   * Download pub78 data at [irs](https://www.irs.gov/charities-non-profits/tax-exempt-organization-search-bulk-data-downloads).
   * Move the `.txt` to `seed/data.txt`.
-  * `make seeder`.
+  * Run `make seeder`.
 - Launch the dev server `make server`.
 
+
+### Linting
+- Install [gometalinter](https://github.com/alecthomas/gometalinter). Make sure you run `gometalinter --install` at least once.
+- Run `make lint`
+- If it fails and shows the list of files at the `Step: goimports`, then it is because the import sections of the files are not properly format.
+- [vim-go](https://github.com/fatih/vim-go) runs `gofmt` on save by default. If you like it to run `goimports` instead, please refer to https://github.com/fatih/vim-go/issues/207
 
 ### License
 [GPL-3.0](https://www.gnu.org/licenses/gpl-3.0.txt) &copy; WeTrustPlatform

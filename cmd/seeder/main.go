@@ -2,6 +2,7 @@ package main
 
 import (
 	"flag"
+
 	"github.com/WeTrustPlatform/charity-management-serv/db"
 	"github.com/WeTrustPlatform/charity-management-serv/seed"
 )

@@ -17,7 +17,7 @@ test:
 	$(GOTEST) -v ./...
 clean:
 	$(GOCLEAN)
-	@rm -f $(BINARY_SERVER)
+	@rm -r $(BUILT)
 server: build-server
 	./$(BINARY_SERVER)
 seeder: build-seeder
@@ -25,9 +25,9 @@ seeder: build-seeder
 dep:
 	dep ensure
 lint:
-	@echo "gometalinter"
-	@gometalinter --vendor ./...
-	@echo "gofmt (simplify)"
+	@echo "Step: gometalinter"
+	@gometalinter --vendor --exclude "defer" ./...
+	@echo "Step: gofmt (simplify)"
 	@! gofmt -s -l . 2>&1 | grep -v vendor
-	@echo "goimports"
+	@echo "Step: goimports"
 	@! goimports -l . | grep -v vendor

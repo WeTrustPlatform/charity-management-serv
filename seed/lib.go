@@ -4,9 +4,11 @@ import (
 	"encoding/csv"
 	"errors"
 	"fmt"
+	"io"
+	"os"
+
 	"github.com/WeTrustPlatform/charity-management-serv/db"
 	"github.com/jinzhu/gorm"
-	"os"
 )
 
 // ParseCharity constructs Charity from an array of string
@@ -29,7 +31,7 @@ func ParseCharity(line []string) (*db.Charity, error) {
 }
 
 // NewCSVReader takes in a filename and returns a csv.Reader
-func NewCSVReader(file *os.File) *csv.Reader {
+func NewCSVReader(file io.Reader) *csv.Reader {
 	reader := csv.NewReader(file)
 	reader.Comma = '|'
 	return reader

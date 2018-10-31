@@ -3,13 +3,14 @@ package db
 import (
 	"encoding/json"
 	"fmt"
+	"net/http"
+	"strconv"
+	"time"
+
 	p "github.com/Prabandham/paginator"
 	"github.com/WeTrustPlatform/charity-management-serv/util"
 	"github.com/gorilla/mux"
 	"github.com/jinzhu/gorm"
-	"net/http"
-	"strconv"
-	"time"
 )
 
 // Charity Model
@@ -57,7 +58,10 @@ func GetCharities(w http.ResponseWriter, r *http.Request) {
 
 	var charities []Charity
 	results := paginator.Paginate(&charities)
-	json.NewEncoder(w).Encode(results)
+
+	if err := json.NewEncoder(w).Encode(results); err != nil {
+		util.LogError(err)
+	}
 }
 
 // GetCharity returns one charity whose ID is in the request param
@@ -76,5 +80,7 @@ func GetCharity(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	json.NewEncoder(w).Encode(charity)
+	if err = json.NewEncoder(w).Encode(charity); err != nil {
+		util.LogError(err)
+	}
 }

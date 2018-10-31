@@ -1,11 +1,12 @@
 package main
 
 import (
+	"log"
+	"net/http"
+
 	"github.com/WeTrustPlatform/charity-management-serv/db"
 	"github.com/WeTrustPlatform/charity-management-serv/util"
 	"github.com/gorilla/mux"
-	"log"
-	"net/http"
 )
 
 func main() {

@@ -2,6 +2,7 @@ package db
 
 import (
 	"fmt"
+
 	"github.com/WeTrustPlatform/charity-management-serv/util"
 	"github.com/jinzhu/gorm"
 	_ "github.com/jinzhu/gorm/dialects/postgres" // wrap postgres driver
