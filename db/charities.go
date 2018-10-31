@@ -2,9 +2,11 @@ package db
 
 import (
 	"encoding/json"
+	"fmt"
 	p "github.com/Prabandham/paginator"
 	"github.com/WeTrustPlatform/charity-management-serv/util"
 	"github.com/gorilla/mux"
+	"github.com/jinzhu/gorm"
 	"net/http"
 	"strconv"
 	"time"
@@ -37,8 +39,17 @@ func GetCharities(w http.ResponseWriter, r *http.Request) {
 		page = "1"
 	}
 
+	name := query.Get("name")
+	var dataSource *gorm.DB
+	if len(name) > 0 {
+		searchValue := fmt.Sprintf("%%%s%%", name)
+		dataSource = dbInstance.Where("Name ILIKE ?", searchValue)
+	} else {
+		dataSource = dbInstance
+	}
+
 	paginator := p.Paginator{
-		DB:      dbInstance,
+		DB:      dataSource,
 		OrderBy: []string{"Name ASC"},
 		Page:    page,
 		PerPage: util.GetEnv("PER_PAGE", "10"), // Don't want clients to load all records
