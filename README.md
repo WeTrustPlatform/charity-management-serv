@@ -12,7 +12,13 @@ Provide RESTful endpoints to access all the 501c3 organizations information.
 - Install dependencies `make dep`.
 - (Optional) Create your `.env` variables for your local configs. The default is:
 ```
+# server port
 export PORT=8001
+
+# pagination
+export PER_PAGE=10
+
+# database connection
 export DB_HOST=localhost
 export DB_PORT=5432
 export DB_USER=postgres

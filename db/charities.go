@@ -3,6 +3,7 @@ package db
 import (
 	"encoding/json"
 	p "github.com/Prabandham/paginator"
+	"github.com/WeTrustPlatform/charity-management-serv/util"
 	"github.com/gorilla/mux"
 	"net/http"
 	"strconv"
@@ -35,8 +36,8 @@ func GetCharities(w http.ResponseWriter, r *http.Request) {
 	paginator := p.Paginator{
 		DB:      dbInstance,
 		OrderBy: []string{"Name ASC"},
-		Page:    "1",  // TODO fix me.
-		PerPage: "10", // TODO fix me. Don't want to let client specify because they could load all
+		Page:    "1",                           // TODO fix me.
+		PerPage: util.GetEnv("PER_PAGE", "10"), // Don't want clients to load all records
 	}
 
 	results := paginator.Paginate(&charities)
