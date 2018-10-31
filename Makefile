@@ -8,8 +8,8 @@ BINARY_SEEDER := bin/seeder
 
 all: test build
 build:
-	$(GOBUILD) -o ./$(BINARY_SERVER) -v ./cmd/server/main.go;
-	$(GOBUILD) -o ./$(BINARY_SEEDER) -v ./cmd/seeder/main.go;
+	$(GOBUILD) -o ./$(BINARY_SERVER) -v ./cmd/server/main.go
+	$(GOBUILD) -o ./$(BINARY_SEEDER) -v ./cmd/seeder/main.go
 test:
 	$(GOTEST) -v ./...
 clean:

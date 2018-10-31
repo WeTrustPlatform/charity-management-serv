@@ -35,8 +35,10 @@ func NewCSVReader(file *os.File) *csv.Reader {
 	return reader
 }
 
-// Populate will upload all the records in pub78 to DB
-func Populate(dbInstance *gorm.DB, persist bool) {
+// Populate will insert all the records in pub78 to DB.
+// If the record already exists,
+// it will update DB with new values in the pub78 txt
+func Populate(dbInstance *gorm.DB, dryRun bool) {
 
 	// Load data from txt file
 	filename := "seed/data.txt"
@@ -58,10 +60,26 @@ func Populate(dbInstance *gorm.DB, persist bool) {
 			continue
 		}
 
-		fmt.Println(charity)
+		if !dryRun {
+			var (
+				whereCondition = db.Charity{EIN: charity.EIN}
+				// all the required fields available in pub78
+				updatedValue = db.Charity{
+					Name:              charity.Name,
+					City:              charity.City,
+					State:             charity.State,
+					Country:           charity.Country,
+					EIN:               charity.EIN,
+					DeductibilityCode: charity.DeductibilityCode,
+				}
+			)
 
-		if persist {
-			dbInstance.Create(charity)
+			dbInstance.Where(whereCondition).Assign(updatedValue).FirstOrCreate(&charity)
 		}
+
+		// just print out the charity struct for dryRun
+		// TODO provide more info on how DB would change
+		// like new records, updated fields, ...
+		fmt.Println(charity)
 	}
 }
