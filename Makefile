@@ -3,8 +3,8 @@ GOBUILD := $(GOCMD) build
 GOCLEAN := $(GOCMD) clean
 GOTEST := $(GOCMD) test
 GOGET := $(GOCMD) get
-BINARY_SERVER := bin/server
-BINARY_SEEDER := bin/seeder
+BINARY_SERVER := bin/cms-server
+BINARY_SEEDER := bin/cms-seeder
 
 all: test build
 build:
