@@ -2,8 +2,8 @@ package db
 
 import (
 	"encoding/json"
+	p "github.com/Prabandham/paginator"
 	"github.com/gorilla/mux"
-	"log"
 	"net/http"
 	"strconv"
 	"time"
@@ -31,13 +31,16 @@ type Charity struct {
 // GetCharities returns all charities in the http response
 func GetCharities(w http.ResponseWriter, r *http.Request) {
 	var charities []Charity
-	if err := dbInstance.Find(&charities).Error; err != nil {
-		log.Println(err)
-		http.Error(w, err.Error(), http.StatusInternalServerError)
-		return
+
+	paginator := p.Paginator{
+		DB:      dbInstance,
+		OrderBy: []string{"Name ASC"},
+		Page:    "1",  // TODO fix me.
+		PerPage: "10", // TODO fix me. Don't want to let client specify because they could load all
 	}
 
-	json.NewEncoder(w).Encode(charities)
+	results := paginator.Paginate(&charities)
+	json.NewEncoder(w).Encode(results)
 }
 
 // GetCharity returns one charity whose ID is in the request param

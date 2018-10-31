@@ -2,6 +2,14 @@
 
 
 [[projects]]
+  branch = "master"
+  digest = "1:ceaf93ac937666457f4d8d9e738680b85e05d1b92442d880602a8b53e19656ba"
+  name = "github.com/Prabandham/paginator"
+  packages = ["."]
+  pruneopts = "UT"
+  revision = "853450dc0c182f5abe9635e021f4828888a55b19"
+
+[[projects]]
   digest = "1:c79fb010be38a59d657c48c6ba1d003a8aa651fa56b579d959d74573b7dff8e1"
   name = "github.com/gorilla/context"
   packages = ["."]
@@ -60,6 +68,7 @@
   analyzer-name = "dep"
   analyzer-version = 1
   input-imports = [
+    "github.com/Prabandham/paginator",
     "github.com/gorilla/mux",
     "github.com/jinzhu/gorm",
     "github.com/jinzhu/gorm/dialects/postgres",
