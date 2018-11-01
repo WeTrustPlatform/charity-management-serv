@@ -29,7 +29,12 @@ export DB_NAME=development
   * Download pub78 data at [irs](https://www.irs.gov/charities-non-profits/tax-exempt-organization-search-bulk-data-downloads).
   * Move the `.txt` to `seed/data.txt`.
   * Run `make seeder`.
-- Launch the dev server `make server`.
+- Build binary `make build`. All the binaries are in the auto-generated folder `bin/`.
+- (Optional) Live reload:
+  * Install [fswatch](https://github.com/emcrisostomo/fswatch).
+  * Start dev server `make dev`.
+  * It will rebuild the server and restart when there are changes in `*.go`.
+
 
 
 ### Linting

@@ -9,17 +9,17 @@ BINARY_SEEDER := ${BUILT}/cms-seeder
 
 all: test lint build
 build-server:
-	$(GOBUILD) -o ./$(BINARY_SERVER) -v ./cmd/server/main.go
+	$(GOBUILD) -o ./$(BINARY_SERVER) ./cmd/server/main.go
 build-seeder:
-	$(GOBUILD) -o ./$(BINARY_SEEDER) -v ./cmd/seeder/main.go
+	$(GOBUILD) -o ./$(BINARY_SEEDER) ./cmd/seeder/main.go
 build: build-server build-seeder
 test:
 	$(GOTEST) -v ./...
 clean:
 	$(GOCLEAN)
-	@rm -r $(BUILT)
-server: build-server
-	./$(BINARY_SERVER)
+	rm -r $(BUILT)
+dev: build-server
+	./live_reload.sh $(BINARY_SERVER) "make build-server"
 seeder: build-seeder
 	./$(BINARY_SEEDER)
 dep:
