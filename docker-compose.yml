@@ -9,6 +9,7 @@ services:
     network_mode: "host"
     depends_on:
       - postgres
+    command: ["./wait_for_postgres.sh", "make", "launch"]
   postgres:
     image: "postgres:10.4"
     env_file:
