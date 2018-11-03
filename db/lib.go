@@ -2,6 +2,8 @@ package db
 
 import (
 	"fmt"
+	"log"
+	"time"
 
 	"github.com/WeTrustPlatform/charity-management-serv/util"
 	"github.com/jinzhu/gorm"
@@ -27,9 +29,16 @@ func Connect() *gorm.DB {
 		"password=%s dbname=%s sslmode=disable",
 		dbHost, dbPort, dbUser, dbPassword, dbName)
 
-	dbInstance, err = gorm.Open("postgres", psqlConnectionString)
-	if err != nil {
-		panic("failed to connect database")
+	for {
+		dbInstance, err = gorm.Open("postgres", psqlConnectionString)
+		if err != nil {
+			log.Println(err)
+			time.Sleep(time.Duration(3) * time.Second)
+			continue
+		}
+
+		break
 	}
+
 	return dbInstance
 }
