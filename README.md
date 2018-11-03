@@ -17,17 +17,17 @@ Provide RESTful endpoints to access all the 501c3 organizations information.
 - Create your `.env` variables for your local configs. The default configs are:
 ```
 # server port
-export PORT=8001
+PORT=8001
 
 # pagination
-export PER_PAGE=10
+PER_PAGE=10
 
 # database connection
-export DB_HOST=localhost
-export DB_PORT=5432
-export DB_USER=postgres
-export DB_PASSWORD=
-export DB_NAME=development
+DB_HOST=localhost
+DB_PORT=5432
+DB_USER=postgres
+DB_PASSWORD=
+DB_NAME=development
 ```
 - Seed database:
   * Download pub78 data at [irs](https://www.irs.gov/charities-non-profits/tax-exempt-organization-search-bulk-data-downloads).

@@ -4,8 +4,8 @@ GOCLEAN := $(GOCMD) clean
 GOTEST := $(GOCMD) test
 GOGET := $(GOCMD) get
 BUILT := bin
-BINARY_SERVER := ${BUILT}/cms-server
-BINARY_SEEDER := ${BUILT}/cms-seeder
+BINARY_SERVER := $(BUILT)/cms-server
+BINARY_SEEDER := $(BUILT)/cms-seeder
 
 all: test lint build
 build-server:
@@ -20,6 +20,8 @@ clean:
 	rm -r $(BUILT)
 dev: build-server
 	./live_reload.sh $(BINARY_SERVER) "make build-server"
+launch:
+	./$(BINARY_SERVER)
 seeder: build-seeder
 	./$(BINARY_SEEDER)
 dep:
