@@ -1,0 +1,17 @@
+version: "3.4"
+services:
+  api:
+    build: .
+    ports:
+      - "${PORT}:${PORT}"
+    env_file:
+      - ".env"
+    network_mode: "host"
+    depends_on:
+      - postgres
+  postgres:
+    image: "postgres:10.4"
+    env_file:
+      - ".env"
+    ports:
+      - "${DB_PORT}:${DB_PORT}"

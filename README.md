@@ -13,7 +13,7 @@ Provide RESTful endpoints to access all the 501c3 organizations information.
 - Build binary `make build`. All the binaries are in the auto-generated folder `bin/`.
 
 
-### Making life easier
+### Making dev life easier
 - Create your `.env` variables for your local configs. The default configs are:
 ```
 # server port
@@ -33,10 +33,18 @@ DB_NAME=development
   * Download pub78 data at [irs](https://www.irs.gov/charities-non-profits/tax-exempt-organization-search-bulk-data-downloads).
   * Move the `.txt` to `seed/data.txt`.
   * Run `make seeder`.
-- Live reload:
+- Live reload: It will auto build and reload the server as you change source code.
   * Install [fswatch](https://github.com/emcrisostomo/fswatch).
   * Start dev server `make dev`.
   * It will rebuild the server and restart when there are changes in `*.go`.
+
+
+### Docker
+If you would like to use this repo as a dependency and do not care to modify the code, then you can get it up running quickly by using [docker-compose](https://docs.docker.com/compose/).
+  * Make sure you have the DB variables in the `.env` as above.
+  * Make sure you have `seed/data.txt` as above.
+  * Launch `docker-compose up`
+  * Seed `docker exec -it charity-management-serv_api_1 make seeder`
 
 
 ### Linting
