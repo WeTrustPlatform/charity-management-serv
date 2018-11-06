@@ -15,9 +15,10 @@ func main() {
 	defer dbInstance.Close()
 	dbInstance.AutoMigrate(&db.Charity{})
 
+	root := "/api/v0"
 	router := mux.NewRouter()
-	router.HandleFunc("/charities", db.GetCharities).Methods("GET")
-	router.HandleFunc("/charities/{id}", db.GetCharity).Methods("GET")
+	router.HandleFunc(root+"/charities", db.GetCharities).Methods("GET")
+	router.HandleFunc(root+"/charities/{id}", db.GetCharity).Methods("GET")
 	port := util.GetEnv("PORT", "8001")
 	log.Println("Listening on http://localhost:" + port)
 
