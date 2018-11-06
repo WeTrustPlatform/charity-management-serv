@@ -21,7 +21,7 @@ type Charity struct {
 	CreatedAt         time.Time  `json:"created_at,omitempty"`
 	UpdatedAt         time.Time  `json:"updated_at,omitempty"`
 	DeletedAt         *time.Time `json:"deleted_at,omitempty"`
-	Name              string     `json:"name,omitempty"`                             // pub78
+	Name              string     `json:"name,omitempty" gorm:"index"`                // pub78
 	City              string     `json:"city,omitempty"`                             // pub78
 	State             string     `json:"state,omitempty"`                            // pub78
 	Country           string     `json:"country,omitempty"`                          // pub78
