@@ -17,4 +17,10 @@ bin/
 
 # Seed data
 seed/*.txt
+
+# Docker persistence
 postgres-data
+
+# Terraform
+.terraform
+terraform.*
