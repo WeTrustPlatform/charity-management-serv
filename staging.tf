@@ -26,10 +26,6 @@ variable "db_user" {
   default = "postgres"
 }
 
-variable "db_name" {
-  default = "production"
-}
-
 variable "db_port" {
   default = "5432"
 }
@@ -58,6 +54,7 @@ module "vpc" {
 
   enable_nat_gateway   = true
   enable_dns_hostnames = true
+  enable_dns_support   = true
 
   azs  = ["${var.region}a", "${var.region}b"]
   tags = "${local.common_tags}"
@@ -80,11 +77,22 @@ module "web_server_sg" {
 }
 
 module "postgres_sg" {
-  source              = "terraform-aws-modules/security-group/aws//modules/postgresql"
-  name                = "postgres-sg"
-  description         = "Security group for postgres DB with port 5432 open within VPC"
-  vpc_id              = "${module.vpc.vpc_id}"
-  ingress_cidr_blocks = ["${module.vpc.public_subnets_cidr_blocks[0]}"]
+  source      = "terraform-aws-modules/security-group/aws"
+  name        = "postgres-sg"
+  description = "Security group for postgres DB with port open within VPC"
+
+  vpc_id = "${module.vpc.vpc_id}"
+
+  computed_ingress_with_source_security_group_id = [
+    {
+      from_port                = "${var.db_port}"
+      to_port                  = "${var.db_port}"
+      protocol                 = "tcp"
+      source_security_group_id = "${module.web_server_sg.this_security_group_id}"
+    },
+  ]
+
+  number_of_computed_ingress_with_source_security_group_id = 1
 }
 
 resource "aws_instance" "master" {
@@ -99,7 +107,7 @@ resource "aws_instance" "master" {
 
   connection {
     user        = "ubuntu"
-    private_key = "${var.private_key}"
+    private_key = "${file(var.private_key)}"
   }
 
   provisioner "remote-exec" {
@@ -121,13 +129,13 @@ module "db" {
   engine            = "postgres"
   engine_version    = "10.4"
   instance_class    = "db.t2.small"
-  allocated_storage = 2
+  allocated_storage = 10
   storage_type      = "gp2"
 
   maintenance_window = "Mon:00:00-Mon:02:00"
   backup_window      = "03:00-04:00"
 
-  name     = "${var.db_name}"
+  name     = "${var.env}"
   username = "${var.db_user}"
   password = "${var.db_password}"
   port     = "${var.db_port}"
@@ -142,4 +150,8 @@ module "db" {
 
 output "aws_instance_public_dns" {
   value = "${aws_instance.master.public_dns}"
+}
+
+output "db_host" {
+  value = "${module.db.this_db_instance_address}"
 }
