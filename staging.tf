@@ -1,6 +1,7 @@
 variable "access_key" {}
 variable "access_secret" {}
 variable "key_name" {}
+variable "private_key" {}
 variable "db_password" {}
 
 variable "region" {
@@ -49,8 +50,8 @@ provider "aws" {
 
 module "vpc" {
   source = "terraform-aws-modules/vpc/aws"
+  name   = "${var.app_name}"
 
-  name             = "${var.app_name}"
   cidr             = "172.31.0.0/16"
   public_subnets   = ["172.31.32.0/20", "172.31.64.0/20"]
   database_subnets = ["172.31.48.0/20", "172.31.80.0/20"]
@@ -64,8 +65,7 @@ module "vpc" {
 
 module "web_server_sg" {
   source = "terraform-aws-modules/security-group/aws"
-
-  name = "web-server-sg"
+  name   = "web-server-sg"
 
   # TODO make the port open within VPC behind the load balancer
   description = "Security group for web-server with HTTP ports open to public"
@@ -87,13 +87,7 @@ module "postgres_sg" {
   ingress_cidr_blocks = ["${module.vpc.public_subnets_cidr_blocks[0]}"]
 }
 
-module "ec2_instance" {
-  source  = "terraform-aws-modules/ec2-instance/aws"
-  version = "1.12.0"
-
-  name           = "${var.app_name}"
-  instance_count = 1
-
+resource "aws_instance" "master" {
   ami                         = "${var.ami_id}"
   associate_public_ip_address = true
   instance_type               = "t2.small"
@@ -101,8 +95,24 @@ module "ec2_instance" {
   monitoring                  = true
   vpc_security_group_ids      = ["${module.web_server_sg.this_security_group_id}"]
   subnet_id                   = "${module.vpc.public_subnets[0]}"
+  tags                        = "${local.common_tags}"
 
-  tags = "${local.common_tags}"
+  connection {
+    user        = "ubuntu"
+    private_key = "${var.private_key}"
+  }
+
+  provisioner "remote-exec" {
+    inline = [
+      "sudo apt-get -y remove docker docker-engine docker.io",
+      "sudo apt-get update",
+      "sudo apt-get -y install apt-transport-https ca-certificates curl software-properties-common",
+      "curl -fsSL https://download.docker.com/linux/ubuntu/gpg | sudo apt-key add -",
+      "sudo add-apt-repository \"deb [arch=amd64] https://download.docker.com/linux/ubuntu $(lsb_release -cs) stable\"",
+      "sudo apt-get update",
+      "sudo apt-get -y install docker-ce",
+    ]
+  }
 }
 
 module "db" {
@@ -111,7 +121,8 @@ module "db" {
   engine            = "postgres"
   engine_version    = "10.4"
   instance_class    = "db.t2.small"
-  allocated_storage = 1
+  allocated_storage = 2
+  storage_type      = "gp2"
 
   maintenance_window = "Mon:00:00-Mon:02:00"
   backup_window      = "03:00-04:00"
@@ -129,6 +140,6 @@ module "db" {
   family = "postgres10"
 }
 
-output "ec2_instance_public_dns" {
-  value = "${module.ec2_instance.public_dns}"
+output "aws_instance_public_dns" {
+  value = "${aws_instance.master.public_dns}"
 }
