@@ -1,2 +1,9 @@
-postgres-data
-.env
+*
+!cmd
+!db
+!seed
+!util
+!vendor
+!Gopkg.lock
+!Gopkg.toml
+!Makefile
