@@ -30,6 +30,18 @@ variable "db_port" {
   default = "5432"
 }
 
+variable "db_name" {
+  default = "staging"
+}
+
+variable "cms_image" {
+  default = "sihoang/charity-management-serv"
+}
+
+variable "cms_seeder_container" {
+  default = "cms_seeder"
+}
+
 locals {
   common_tags = {
     Terraform   = "true"
@@ -104,8 +116,11 @@ resource "aws_instance" "master" {
   vpc_security_group_ids      = ["${module.web_server_sg.this_security_group_id}"]
   subnet_id                   = "${module.vpc.public_subnets[0]}"
   tags                        = "${local.common_tags}"
+}
 
+resource "null_resource" "provision" {
   connection {
+    host        = "${aws_instance.master.public_dns}"
     user        = "ubuntu"
     private_key = "${file(var.private_key)}"
   }
@@ -114,11 +129,45 @@ resource "aws_instance" "master" {
     inline = [
       "sudo apt-get -y remove docker docker-engine docker.io",
       "sudo apt-get update",
-      "sudo apt-get -y install apt-transport-https ca-certificates curl software-properties-common",
+      "sudo apt-get -y install apt-transport-https ca-certificates curl software-properties-common zip",
       "curl -fsSL https://download.docker.com/linux/ubuntu/gpg | sudo apt-key add -",
       "sudo add-apt-repository \"deb [arch=amd64] https://download.docker.com/linux/ubuntu $(lsb_release -cs) stable\"",
       "sudo apt-get update",
       "sudo apt-get -y install docker-ce",
+      "sudo docker pull ${var.cms_image}",
+      <<EOF
+        sudo docker run \
+          --restart always \
+          --name cms \
+          -p 80:8001 \
+          -e DB_HOST=${module.db.this_db_instance_address} \
+          -e DB_PORT=${var.db_port} \
+          -e DB_PASSWORD=${var.db_password} \
+          -e DB_NAME=${var.db_name} \
+          -e DB_USER=${var.db_user} \
+          -d ${var.cms_image}
+      EOF
+      ,
+      "curl -O https://apps.irs.gov/pub/epostcard/data-download-pub78.zip",
+      "unzip -o data-download-pub78.zip",
+      "sudo docker stop ${var.cms_seeder_container} || true",
+      "sudo docker rm ${var.cms_seeder_container} || true",
+      "sudo docker run --name ${var.cms_seeder_container} -t -d ${var.cms_image} /bin/bash",
+      <<EOF
+        sudo docker cp data-download-pub78.txt \
+          ${var.cms_seeder_container}:/go/src/github.com/WeTrustPlatform/charity-management-serv/seed/data.txt
+      EOF
+      ,
+      <<EOF
+        sudo docker exec \
+          -e DB_HOST=${module.db.this_db_instance_address} \
+          -e DB_PORT=${var.db_port} \
+          -e DB_PASSWORD=${var.db_password} \
+          -e DB_NAME=${var.db_name} \
+          -e DB_USER=${var.db_user} \
+          -d ${var.cms_seeder_container} make seeder
+      EOF
+      ,
     ]
   }
 }
@@ -135,7 +184,7 @@ module "db" {
   maintenance_window = "Mon:00:00-Mon:02:00"
   backup_window      = "03:00-04:00"
 
-  name     = "${var.env}"
+  name     = "${var.db_name}"
   username = "${var.db_user}"
   password = "${var.db_password}"
   port     = "${var.db_port}"
