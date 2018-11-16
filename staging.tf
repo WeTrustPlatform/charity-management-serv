@@ -118,7 +118,7 @@ resource "aws_instance" "master" {
   tags                        = "${local.common_tags}"
 }
 
-resource "null_resource" "provision" {
+resource "null_resource" "provision_docker" {
   connection {
     host        = "${aws_instance.master.public_dns}"
     user        = "ubuntu"
@@ -134,7 +134,26 @@ resource "null_resource" "provision" {
       "sudo add-apt-repository \"deb [arch=amd64] https://download.docker.com/linux/ubuntu $(lsb_release -cs) stable\"",
       "sudo apt-get update",
       "sudo apt-get -y install docker-ce",
+      "curl -O https://apps.irs.gov/pub/epostcard/data-download-pub78.zip",
+      "unzip -o data-download-pub78.zip",
+    ]
+  }
+}
+
+resource "null_resource" "provision_cms" {
+  depends_on = ["null_resource.provision_docker"]
+
+  connection {
+    host        = "${aws_instance.master.public_dns}"
+    user        = "ubuntu"
+    private_key = "${file(var.private_key)}"
+  }
+
+  provisioner "remote-exec" {
+    inline = [
       "sudo docker pull ${var.cms_image}",
+      "sudo docker stop cms || true",
+      "sudo docker rm cms || true",
       <<EOF
         sudo docker run \
           --restart always \
@@ -148,8 +167,21 @@ resource "null_resource" "provision" {
           -d ${var.cms_image}
       EOF
       ,
-      "curl -O https://apps.irs.gov/pub/epostcard/data-download-pub78.zip",
-      "unzip -o data-download-pub78.zip",
+    ]
+  }
+}
+
+resource "null_resource" "provision_seeder" {
+  depends_on = ["null_resource.provision_docker", "null_resource.provision_cms"]
+
+  connection {
+    host        = "${aws_instance.master.public_dns}"
+    user        = "ubuntu"
+    private_key = "${file(var.private_key)}"
+  }
+
+  provisioner "remote-exec" {
+    inline = [
       "sudo docker stop ${var.cms_seeder_container} || true",
       "sudo docker rm ${var.cms_seeder_container} || true",
       "sudo docker run --name ${var.cms_seeder_container} -t -d ${var.cms_image} /bin/bash",
