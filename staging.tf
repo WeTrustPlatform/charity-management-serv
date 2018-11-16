@@ -3,6 +3,7 @@ variable "access_secret" {}
 variable "key_name" {}
 variable "private_key" {}
 variable "db_password" {}
+variable "nginx_conf" {}
 
 variable "region" {
   default = "us-west-2"
@@ -36,6 +37,10 @@ variable "db_name" {
 
 variable "cms_image" {
   default = "sihoang/charity-management-serv"
+}
+
+variable "web_image" {
+  default = "sihoang/charity-tcr:testnet-1.0.0"
 }
 
 variable "cms_seeder_container" {
@@ -118,6 +123,33 @@ resource "aws_instance" "master" {
   tags                        = "${local.common_tags}"
 }
 
+resource "null_resource" "provision_nginx" {
+  connection {
+    host        = "${aws_instance.master.public_dns}"
+    user        = "ubuntu"
+    private_key = "${file(var.private_key)}"
+  }
+
+  provisioner "remote-exec" {
+    inline = [
+      "sudo apt-get -y install nginx",
+      "sudo rm /etc/nginx/sites-enabled/* || true",
+    ]
+  }
+
+  provisioner "file" {
+    source      = "${var.nginx_conf}"
+    destination = "./${var.nginx_conf}"
+  }
+
+  provisioner "remote-exec" {
+    inline = [
+      "sudo mv ./${var.nginx_conf} /etc/nginx/sites-enabled/",
+      "sudo service nginx start",
+    ]
+  }
+}
+
 resource "null_resource" "provision_docker" {
   connection {
     host        = "${aws_instance.master.public_dns}"
@@ -140,6 +172,32 @@ resource "null_resource" "provision_docker" {
   }
 }
 
+resource "null_resource" "provision_web" {
+  depends_on = ["null_resource.provision_docker"]
+
+  connection {
+    host        = "${aws_instance.master.public_dns}"
+    user        = "ubuntu"
+    private_key = "${file(var.private_key)}"
+  }
+
+  provisioner "remote-exec" {
+    inline = [
+      "sudo docker pull ${var.web_image}",
+      "sudo docker stop web || true",
+      "sudo docker rm web || true",
+      <<EOF
+        sudo docker run \
+          --restart always \
+          --name web \
+          -p 8000:80 \
+          -d ${var.web_image}
+      EOF
+      ,
+    ]
+  }
+}
+
 resource "null_resource" "provision_cms" {
   depends_on = ["null_resource.provision_docker"]
 
@@ -158,12 +216,13 @@ resource "null_resource" "provision_cms" {
         sudo docker run \
           --restart always \
           --name cms \
-          -p 80:8001 \
+          -p 8001:8001 \
           -e DB_HOST=${module.db.this_db_instance_address} \
           -e DB_PORT=${var.db_port} \
           -e DB_PASSWORD=${var.db_password} \
           -e DB_NAME=${var.db_name} \
           -e DB_USER=${var.db_user} \
+          -e ALLOWED_ORIGINS=* \
           -d ${var.cms_image}
       EOF
       ,
