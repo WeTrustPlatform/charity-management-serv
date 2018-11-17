@@ -4,6 +4,7 @@ variable "key_name" {}
 variable "private_key" {}
 variable "db_password" {}
 variable "nginx_conf" {}
+variable "ssl_certificate_id" {}
 
 variable "region" {
   default = "us-west-2"
@@ -74,6 +75,30 @@ module "vpc" {
   enable_dns_support   = true
 
   azs  = ["${var.region}a", "${var.region}b"]
+  tags = "${local.common_tags}"
+}
+
+module "elb_sg" {
+  source = "terraform-aws-modules/security-group/aws"
+  name   = "elb-sg"
+
+  description = "Security group for ELB with HTTP ports open to public"
+  vpc_id      = "${module.vpc.vpc_id}"
+
+  computed_egress_with_source_security_group_id = [
+    {
+      from_port                = "80"
+      to_port                  = "80"
+      protocol                 = "tcp"
+      source_security_group_id = "${module.web_server_sg.this_security_group_id}"
+    },
+  ]
+
+  number_of_computed_egress_with_source_security_group_id = 1
+
+  ingress_cidr_blocks = ["0.0.0.0/0"]
+  ingress_rules       = ["https-443-tcp", "http-80-tcp"]
+
   tags = "${local.common_tags}"
 }
 
@@ -263,6 +288,42 @@ resource "null_resource" "provision_seeder" {
   }
 }
 
+resource "aws_elb" "elb" {
+  name            = "${var.app_name}"
+  security_groups = ["${module.elb_sg.this_security_group_id}"]
+  subnets         = ["${module.vpc.public_subnets}"]
+
+  listener {
+    instance_port     = 80
+    instance_protocol = "http"
+    lb_port           = 80
+    lb_protocol       = "http"
+  }
+
+  listener {
+    instance_port      = 80
+    instance_protocol  = "http"
+    lb_port            = 443
+    lb_protocol        = "https"
+    ssl_certificate_id = "${var.ssl_certificate_id}"
+  }
+
+  health_check {
+    healthy_threshold   = 2
+    unhealthy_threshold = 2
+    timeout             = 3
+    target              = "HTTP:80/"
+    interval            = 30
+  }
+
+  instances                   = ["${aws_instance.master.id}"]
+  cross_zone_load_balancing   = true
+  idle_timeout                = 400
+  connection_draining         = true
+  connection_draining_timeout = 400
+  tags                        = "${local.common_tags}"
+}
+
 module "db" {
   source            = "terraform-aws-modules/rds/aws"
   identifier        = "${var.app_name}"
@@ -286,10 +347,15 @@ module "db" {
   #deletion_protection = true
 
   family = "postgres10"
+  tags   = "${local.common_tags}"
 }
 
 output "aws_instance_public_dns" {
   value = "${aws_instance.master.public_dns}"
+}
+
+output "aws_elb_dns_name" {
+  value = "${aws_elb.elb.dns_name}"
 }
 
 output "db_host" {
