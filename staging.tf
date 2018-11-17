@@ -1,3 +1,25 @@
+## Topology
+# Public ==> CloudFront ==> ELB ==> EC2 ==> RDS
+# CloudFront is not part of this config file
+# ELB listen to 80 and 443. Public.
+# EC2 only listen to 80 from ELB. Internal.
+# RDS only listen to 5432 from EC2. Internal.
+
+## Enforce SSL
+# Option 1: Configure CloudFront
+# Option 2: Configure nginx
+# https://aws.amazon.com/premiumsupport/knowledge-center/redirect-http-https-elb
+
+## Load balance
+# TODO migrate to the next gen ALB
+# TODO configure AWS ELB for multiple EC2's
+# TODO configure nginx and docker for multiple api processes
+# TODO configure RDS replication
+# For now, we have:
+# 1 instance behind ELB
+# 1 api process
+# CloudFront is manually configured to cache web static files
+
 variable "access_key" {}
 variable "access_secret" {}
 variable "key_name" {}
