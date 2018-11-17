@@ -110,10 +110,22 @@ module "web_server_sg" {
   description = "Security group for web-server with HTTP ports open to public"
   vpc_id      = "${module.vpc.vpc_id}"
 
-  egress_cidr_blocks  = ["0.0.0.0/0"]
-  egress_rules        = ["all-tcp"]
+  egress_cidr_blocks = ["0.0.0.0/0"]
+  egress_rules       = ["all-tcp"]
+
   ingress_cidr_blocks = ["0.0.0.0/0"]
-  ingress_rules       = ["https-443-tcp", "http-80-tcp", "ssh-tcp"]
+  ingress_rules       = ["ssh-tcp"]
+
+  computed_ingress_with_source_security_group_id = [
+    {
+      from_port                = "80"
+      to_port                  = "80"
+      protocol                 = "tcp"
+      source_security_group_id = "${module.elb_sg.this_security_group_id}"
+    },
+  ]
+
+  number_of_computed_ingress_with_source_security_group_id = 1
 
   tags = "${local.common_tags}"
 }
@@ -312,7 +324,7 @@ resource "aws_elb" "elb" {
     healthy_threshold   = 2
     unhealthy_threshold = 2
     timeout             = 3
-    target              = "HTTP:80/"
+    target              = "HTTP:80/api/v0/charities"
     interval            = 30
   }
 
