@@ -63,7 +63,7 @@ variable "cms_image" {
 }
 
 variable "web_image" {
-  default = "sihoang/charity-tcr:testnet-1.0.0"
+  default = "sihoang/charity-tcr:testnet-latest"
 }
 
 variable "cms_seeder_container" {
