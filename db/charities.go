@@ -40,11 +40,11 @@ func GetCharities(w http.ResponseWriter, r *http.Request) {
 		page = "1"
 	}
 
-	name := query.Get("name")
+	search := query.Get("search")
 	var dataSource *gorm.DB
-	if len(name) > 0 {
-		searchValue := fmt.Sprintf("%%%s%%", name)
-		dataSource = dbInstance.Where("Name ILIKE ?", searchValue)
+	if len(search) > 0 {
+		searchValue := fmt.Sprintf("%s:*", search)
+		dataSource = dbInstance.Where("tsv @@ to_tsquery(?)", searchValue)
 	} else {
 		dataSource = dbInstance
 	}

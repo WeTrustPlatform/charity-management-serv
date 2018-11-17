@@ -40,5 +40,18 @@ func Connect() *gorm.DB {
 		break
 	}
 
+	dbInstance.AutoMigrate(&Charity{})
+
+	// Custom queries those are not supported by Gorm
+	dbInstance.Exec("ALTER TABLE charities ADD COLUMN IF NOT EXISTS tsv tsvector;")
+	dbInstance.Exec(`
+		UPDATE charities
+		SET tsv = setweight(to_tsvector(name), 'A')
+		|| setweight(to_tsvector(ein), 'B')
+		|| setweight(to_tsvector(city), 'C')
+		|| setweight(to_tsvector(state), 'D')
+		;
+		`)
+	dbInstance.Exec("CREATE INDEX IF NOT EXISTS ix_charities_tsv ON charities USING GIN(tsv);")
 	return dbInstance
 }

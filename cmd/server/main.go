@@ -13,7 +13,6 @@ import (
 func main() {
 	dbInstance := db.Connect()
 	defer dbInstance.Close()
-	dbInstance.AutoMigrate(&db.Charity{})
 
 	root := "/api/v0"
 	router := mux.NewRouter()
