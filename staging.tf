@@ -204,7 +204,7 @@ resource "null_resource" "provision_nginx" {
   provisioner "remote-exec" {
     inline = [
       "sudo mv ./${var.nginx_conf} /etc/nginx/sites-enabled/",
-      "sudo service nginx start",
+      "sudo service nginx reload",
     ]
   }
 }
