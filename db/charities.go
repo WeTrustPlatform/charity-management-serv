@@ -40,6 +40,25 @@ func GetCharities(w http.ResponseWriter, r *http.Request) {
 		page = "1"
 	}
 
+	// if query has ein
+	// then return the exact match of ein
+	// and ignore the rest queries
+	ein := query.Get("ein")
+	if len(ein) > 0 {
+		var charity Charity
+		if dbInstance.Where("EIN = ?", ein).First(&charity).RecordNotFound() {
+			http.NotFound(w, r)
+			return
+		}
+
+		if err = json.NewEncoder(w).Encode(charity); err != nil {
+			util.LogError(err)
+		}
+
+		return
+	}
+
+	// search by anything
 	search := query.Get("search")
 	var dataSource *gorm.DB
 	if len(search) > 0 {
