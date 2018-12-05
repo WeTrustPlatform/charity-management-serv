@@ -40,10 +40,7 @@ func NewCSVReader(file io.Reader) *csv.Reader {
 // Populate will insert all the records in pub78 to DB.
 // If the record already exists,
 // it will update DB with new values in the pub78 txt
-func Populate(dbInstance *gorm.DB, dryRun bool) {
-
-	// Load data from txt file
-	filename := "seed/data.txt"
+func Populate(dbInstance *gorm.DB, filename string, dryRun bool) {
 	f, err := os.Open(filename)
 	if err != nil {
 		panic(err)

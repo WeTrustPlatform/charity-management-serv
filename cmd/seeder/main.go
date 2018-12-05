@@ -10,11 +10,15 @@ import (
 func main() {
 	var dryRun bool
 	flag.BoolVar(&dryRun, "dryrun", false, "dryrun")
+
+	var filename string
+	flag.StringVar(&filename, "data", "seed/data.txt", "data file to seed")
+
 	flag.Parse()
 
 	dbInstance := db.Connect()
 	defer dbInstance.Close()
 	dbInstance.AutoMigrate(&db.Charity{})
 
-	seed.Populate(dbInstance, dryRun)
+	seed.Populate(dbInstance, filename, dryRun)
 }
