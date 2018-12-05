@@ -51,7 +51,7 @@ func GetCharities(w http.ResponseWriter, r *http.Request) {
 			return
 		}
 
-		if err = json.NewEncoder(w).Encode(charity); err != nil {
+		if err := json.NewEncoder(w).Encode(charity); err != nil {
 			util.LogError(err)
 		}
 

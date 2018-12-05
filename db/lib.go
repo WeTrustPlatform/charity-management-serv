@@ -11,12 +11,12 @@ import (
 )
 
 var dbInstance *gorm.DB
-var err error
 
 // Connect initializes a DB connection based on .env configs
 // default is postgres://postgres:@localhost:5432/development
 // and return the DB instance
 func Connect() *gorm.DB {
+
 	var (
 		dbHost     = util.GetEnv("DB_HOST", "localhost")
 		dbPort     = util.GetEnv("DB_PORT", "5432")
@@ -30,6 +30,7 @@ func Connect() *gorm.DB {
 		dbHost, dbPort, dbUser, dbPassword, dbName)
 
 	for {
+		var err error
 		dbInstance, err = gorm.Open("postgres", psqlConnectionString)
 		if err != nil {
 			log.Println(err)
