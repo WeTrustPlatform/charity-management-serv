@@ -14,7 +14,7 @@ build-seeder:
 	$(GOBUILD) -o ./$(BINARY_SEEDER) ./cmd/seeder/main.go
 build: build-server build-seeder
 test:
-	$(GOTEST) -v ./...
+	$(GOTEST) -coverprofile cp.out -v ./...
 clean:
 	$(GOCLEAN)
 	rm -r $(BUILT)

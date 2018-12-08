@@ -1,7 +1,6 @@
 package main
 
 import (
-	. "github.com/WeTrustPlatform/charity-management-serv/cmd/server"
 	"github.com/WeTrustPlatform/charity-management-serv/seed"
 	"net/http"
 	"net/http/httptest"
