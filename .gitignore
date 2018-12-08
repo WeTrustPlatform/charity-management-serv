@@ -16,7 +16,7 @@ bin/
 .env
 
 # Seed data
-seed/*.txt
+seed/data.txt
 
 # Docker persistence
 postgres-data
