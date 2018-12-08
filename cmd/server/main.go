@@ -21,8 +21,8 @@ func Router() *mux.Router {
 }
 
 // DB initialize and connect to DB based on .env
-func DB() *gorm.DB {
-	dbInstance := db.Connect()
+func DB(retry bool) *gorm.DB {
+	dbInstance := db.Connect(retry)
 	return dbInstance
 }
 
@@ -40,7 +40,7 @@ func CorsPolicy() *cors.Cors {
 }
 
 func main() {
-	dbInstance := DB()
+	dbInstance := DB(true)
 	defer dbInstance.Close()
 
 	router := Router()

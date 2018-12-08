@@ -16,7 +16,7 @@ func main() {
 
 	flag.Parse()
 
-	dbInstance := db.Connect()
+	dbInstance := db.Connect(false)
 	defer dbInstance.Close()
 	dbInstance.AutoMigrate(&db.Charity{})
 

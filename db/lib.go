@@ -15,7 +15,7 @@ var dbInstance *gorm.DB
 // Connect initializes a DB connection based on .env configs
 // default is postgres://postgres:@localhost:5432/development
 // and return the DB instance
-func Connect() *gorm.DB {
+func Connect(retry bool) *gorm.DB {
 
 	var (
 		dbHost     = util.GetEnv("DB_HOST", "localhost")
@@ -33,6 +33,9 @@ func Connect() *gorm.DB {
 		var err error
 		dbInstance, err = gorm.Open("postgres", psqlConnectionString)
 		if err != nil {
+			if !retry {
+				panic(err)
+			}
 			log.Println(err)
 			time.Sleep(time.Duration(3) * time.Second)
 			continue
