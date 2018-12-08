@@ -1,3 +1,5 @@
+[![Build Status](https://travis-ci.org/WeTrustPlatform/charity-management-serv.svg?branch=master)](https://travis-ci.org/WeTrustPlatform/charity-management-serv)
+
 # Charity Management Serv
 Work-in-progress
 

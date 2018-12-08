@@ -1,0 +1,19 @@
+language: go
+go:
+  - "1.10"
+addons:
+  postgresql: '10'
+  apt:
+    packages:
+    - postgresql-10
+    - postgresql-client-10
+before_script:
+    # Use default port
+    - sudo sed -i 's/port = 5433/port = 5432/' /etc/postgresql/10/main/postgresql.conf
+    # Use 9.6 auth config:
+    - sudo cp /etc/postgresql/{9.6,10}/main/pg_hba.conf
+    - sudo service postgresql restart
+install:
+  - go get github.com/alecthomas/gometalinter
+  - gometalinter --install
+script: make
