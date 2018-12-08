@@ -59,7 +59,7 @@ variable "db_name" {
 }
 
 variable "cms_image" {
-  default = "sihoang/charity-management-serv"
+  default = "sihoang/charity-management-serv:latest"
 }
 
 variable "web_image" {
