@@ -6,6 +6,8 @@ import (
 	"fmt"
 	"io"
 	"os"
+	"path/filepath"
+	"runtime"
 
 	"github.com/WeTrustPlatform/charity-management-serv/db"
 	"github.com/jinzhu/gorm"
@@ -41,7 +43,11 @@ func NewCSVReader(file io.Reader) *csv.Reader {
 // If the record already exists,
 // it will update DB with new values in the pub78 txt
 func Populate(dbInstance *gorm.DB, filename string, dryRun bool) {
-	f, err := os.Open(filename)
+	// data file must be in the same folder as seed/lib.go
+	_, thisFile, _, _ := runtime.Caller(0)
+	basePath := filepath.Dir(thisFile)
+	filePath := filepath.Join(basePath, filename)
+	f, err := os.Open(filepath.Clean(filePath))
 	if err != nil {
 		panic(err)
 	}

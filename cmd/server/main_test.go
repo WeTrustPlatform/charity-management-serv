@@ -1,17 +1,19 @@
 package main
 
 import (
-	"github.com/WeTrustPlatform/charity-management-serv/seed"
 	"net/http"
 	"net/http/httptest"
 	"os"
 	"testing"
+
+	"github.com/WeTrustPlatform/charity-management-serv/seed"
 )
 
 func TestMain(m *testing.M) {
 	dbInstance := DB()
 	defer dbInstance.Close()
-	seed.Populate(dbInstance, "../../seed/data_test.txt", false)
+
+	seed.Populate(dbInstance, "data_test.txt", false)
 	code := m.Run()
 	os.Exit(code)
 }
