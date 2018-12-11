@@ -29,7 +29,7 @@ func DB(retry bool) *gorm.DB {
 // CorsPolicy specify policy
 func CorsPolicy() *cors.Cors {
 	corsPolicy := cors.New(cors.Options{
-		AllowedOrigins: []string{util.GetEnv("ALLOWED_ORIGINS", "http://localhost:8000")},
+		AllowedOrigins: []string{util.GetEnv("ALLOWED_ORIGIN", "http://localhost:8000")},
 		AllowedMethods: []string{
 			http.MethodGet,
 			http.MethodOptions,

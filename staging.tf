@@ -281,7 +281,7 @@ resource "null_resource" "provision_cms" {
           -e DB_PASSWORD=${var.db_password} \
           -e DB_NAME=${var.db_name} \
           -e DB_USER=${var.db_user} \
-          -e ALLOWED_ORIGINS=* \
+          -e ALLOWED_ORIGIN="*" \
           -d ${var.cms_image}
       EOF
       ,
