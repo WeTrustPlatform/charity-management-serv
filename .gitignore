@@ -22,5 +22,5 @@ seed/data.txt
 postgres-data
 
 # Terraform
-.terraform
+.terraform*
 terraform.*

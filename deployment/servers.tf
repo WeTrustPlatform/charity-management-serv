@@ -305,7 +305,7 @@ resource "null_resource" "provision_seeder" {
     inline = [
       "sudo docker stop ${var.cms_seeder_container} || true",
       "sudo docker rm ${var.cms_seeder_container} || true",
-      "sudo docker run --name ${var.cms_seeder_container} -t -d ${var.cms_image} /bin/bash",
+      "sudo docker run --name ${var.cms_seeder_container} -t -d ${var.cms_image} /bin/sh",
       <<EOF
         sudo docker cp data-download-pub78.txt \
           ${var.cms_seeder_container}:/go/src/github.com/WeTrustPlatform/charity-management-serv/seed/data.txt
