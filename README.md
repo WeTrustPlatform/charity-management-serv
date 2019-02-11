@@ -58,6 +58,7 @@ If you would like to use this repo as a dependency and do not care to modify the
 
 ### Deployment
 - Use [terraform](https://www.terraform.io/) to provise the AWS infra and deploy docker containers.
+- Go to the deployment env i.e. `cd deployment/staging`
 - Configure your `terraform.tfvars` as below:
 ```
 access_key =  <IAM user with permissions to create EC2, VPC, RDS and CloudFront(optional). Otherwise, you'll get 403 Forbidden>
@@ -74,7 +75,7 @@ nginx_conf = "./nginx.conf"
 
 ssl_certificate_id = <get cert for your domain via AWS ACM. Make sure it in the same region. For example: arn:aws:acm:us-west-2:xxxxxx:certificate/xxxxxxxxx"
 ```
-- Other default configs are declared at the beginning of `staging.tf`
+- Other default configs are declared at the beginning of `servers.tf`
 - Provise infra and deploy for the first time:
 ```
 terraform apply
@@ -82,7 +83,7 @@ terraform apply
 - When you want to deploy the latest containers:
 ```
 terraform taint null_resource.provision_cms // this is for charity-management-serv
-terraform taint null_resource.provision_web // this is for charity-tcr front-end
+terraform taint null_resource.provision_web // this is for staking-dapp front-end
 
 terraform apply
 ```
