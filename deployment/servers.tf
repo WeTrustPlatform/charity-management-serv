@@ -1,3 +1,6 @@
+# This file is shared between staking and production
+# Please make sure to set the correct variables for each env
+
 ## Topology
 # Public ==> CloudFront ==> ELB ==> EC2 ==> RDS
 # CloudFront is not part of this config file
@@ -43,7 +46,7 @@ variable "env" {
 }
 
 variable "app_name" {
-  default = "tcr-staging-1"
+  default = "staking"
 }
 
 variable "db_user" {
@@ -55,7 +58,7 @@ variable "db_port" {
 }
 
 variable "db_name" {
-  default = "staging"
+  default = "staking"
 }
 
 variable "cms_image" {
@@ -63,7 +66,7 @@ variable "cms_image" {
 }
 
 variable "web_image" {
-  default = "sihoang/charity-tcr:testnet-latest"
+  default = "sihoang/staking-dapp:latest"
 }
 
 variable "cms_seeder_container" {
