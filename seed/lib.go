@@ -17,7 +17,7 @@ import (
 // array has to conform to data order in the pub78 txt
 func ParseCharity(line []string) (*db.Charity, error) {
 	if len(line) < 6 {
-		return nil, errors.New("Invalid record")
+		return nil, errors.New("invalid record")
 	}
 
 	charity := db.Charity{
