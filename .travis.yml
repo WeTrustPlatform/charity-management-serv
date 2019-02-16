@@ -13,6 +13,7 @@ before_script:
     # Use 9.6 auth config:
     - sudo cp /etc/postgresql/{9.6,10}/main/pg_hba.conf
     - sudo service postgresql restart
+    - psql -c 'create database cms_development;' -U postgres
 install:
   - go get github.com/alecthomas/gometalinter
   - gometalinter --install
