@@ -69,16 +69,15 @@ variable "web_image" {
   default = "sihoang/staking-dapp:latest"
 }
 
-variable "cms_seeder_container" {
-  default = "cms_seeder"
-}
-
 locals {
   common_tags = {
     Terraform   = "true"
     Environment = "${var.env}"
     App         = "${var.app_name}"
   }
+
+  cms_seeder_container = "cms_seeder_container"
+  cms_env              = "cms_env"
 }
 
 provider "aws" {
@@ -230,7 +229,7 @@ resource "null_resource" "provision_docker" {
       "sudo apt-get -y install docker-ce",
       "curl -O https://apps.irs.gov/pub/epostcard/data-download-pub78.zip",
       "unzip -o data-download-pub78.zip",
-      "curl https://s3.amazonaws.com/rds-downloads/rds-combined-ca-bundle.pem > rds-combined-ca-bundle.pem"
+      "curl https://s3.amazonaws.com/rds-downloads/rds-combined-ca-bundle.pem > rds-combined-ca-bundle.pem",
     ]
   }
 }
@@ -275,14 +274,18 @@ resource "null_resource" "provision_cms" {
       "sudo docker pull ${var.cms_image}",
       "sudo docker stop cms || true",
       "sudo docker rm cms || true",
+
+      # create new cms_env file
+      "echo DATABASE_URL=\"postgres://${var.db_user}:${var.db_password}@${module.db.this_db_instance_address}:${var.db_port}/${var.db_name}?sslmode=verify-full&sslrootcert=/workdir/rds-combined-ca-bundle.pem\" > ${local.cms_env}",
+
+      "echo ALLOWED_ORIGIN=\"*\" >> ${local.cms_env}",
       <<EOF
         sudo docker run \
           --restart always \
           --name cms \
           -p 8001:8001 \
-          -v .:/workdir \
-          -e DATABASE_URL=postgres://${var.db_user}:${var.db_password}@${module.db.this_db_instance_address}:${var.db_port}/${db_name}?sslmode=verify-full&sslrootcert=/workdir/rds-combined-ca-bundle.pem \
-          -e ALLOWED_ORIGIN="*" \
+          -v ~/:/workdir \
+          --env-file ./${local.cms_env} \
           -d ${var.cms_image}
       EOF
       ,
@@ -301,20 +304,28 @@ resource "null_resource" "provision_seeder" {
 
   provisioner "remote-exec" {
     inline = [
-      "sudo docker stop ${var.cms_seeder_container} || true",
-      "sudo docker rm ${var.cms_seeder_container} || true",
-      "sudo docker run --name ${var.cms_seeder_container} -t -d ${var.cms_image} /bin/sh",
+      "sudo docker stop ${local.cms_seeder_container} || true",
+      "sudo docker rm ${local.cms_seeder_container} || true",
+
+      # launch a separate container for seeder
+      <<EOF
+        sudo docker run \
+          --name ${local.cms_seeder_container} \
+          -v ~/:/workdir \
+          --env-file ./${local.cms_env} \
+          -t -d ${var.cms_image} /bin/sh
+      EOF
+      ,
+
       <<EOF
         sudo docker cp data-download-pub78.txt \
-          ${var.cms_seeder_container}:/go/src/github.com/WeTrustPlatform/charity-management-serv/seed/data.txt
+          ${local.cms_seeder_container}:/go/src/github.com/WeTrustPlatform/charity-management-serv/seed/data.txt
       EOF
       ,
       <<EOF
         sudo docker exec \
-          -v .:/workdir \
-          -e DATABASE_URL=postgres://${var.db_user}:${var.db_password}@${module.db.this_db_instance_address}:${var.db_port}/${db_name}?sslmode=verify-full&sslrootcert=/workdir/rds-combined-ca-bundle.pem \
           -e data=data.txt \
-          -d ${var.cms_seeder_container} make seeder
+          -d ${local.cms_seeder_container} make seeder
       EOF
       ,
     ]
