@@ -230,6 +230,7 @@ resource "null_resource" "provision_docker" {
       "sudo apt-get -y install docker-ce",
       "curl -O https://apps.irs.gov/pub/epostcard/data-download-pub78.zip",
       "unzip -o data-download-pub78.zip",
+      "curl https://s3.amazonaws.com/rds-downloads/rds-combined-ca-bundle.pem > rds-combined-ca-bundle.pem"
     ]
   }
 }
@@ -279,11 +280,8 @@ resource "null_resource" "provision_cms" {
           --restart always \
           --name cms \
           -p 8001:8001 \
-          -e DB_HOST=${module.db.this_db_instance_address} \
-          -e DB_PORT=${var.db_port} \
-          -e DB_PASSWORD=${var.db_password} \
-          -e DB_NAME=${var.db_name} \
-          -e DB_USER=${var.db_user} \
+          -v .:/workdir \
+          -e DATABASE_URL=postgres://${var.db_user}:${var.db_password}@${module.db.this_db_instance_address}:${var.db_port}/${db_name}?sslmode=verify-full&sslrootcert=/workdir/rds-combined-ca-bundle.pem \
           -e ALLOWED_ORIGIN="*" \
           -d ${var.cms_image}
       EOF
@@ -293,7 +291,7 @@ resource "null_resource" "provision_cms" {
 }
 
 resource "null_resource" "provision_seeder" {
-  depends_on = ["null_resource.provision_docker", "null_resource.provision_cms"]
+  depends_on = ["null_resource.provision_cms"]
 
   connection {
     host        = "${aws_instance.master.public_dns}"
@@ -313,11 +311,9 @@ resource "null_resource" "provision_seeder" {
       ,
       <<EOF
         sudo docker exec \
-          -e DB_HOST=${module.db.this_db_instance_address} \
-          -e DB_PORT=${var.db_port} \
-          -e DB_PASSWORD=${var.db_password} \
-          -e DB_NAME=${var.db_name} \
-          -e DB_USER=${var.db_user} \
+          -v .:/workdir \
+          -e DATABASE_URL=postgres://${var.db_user}:${var.db_password}@${module.db.this_db_instance_address}:${var.db_port}/${db_name}?sslmode=verify-full&sslrootcert=/workdir/rds-combined-ca-bundle.pem \
+          -e data=data.txt \
           -d ${var.cms_seeder_container} make seeder
       EOF
       ,
