@@ -10,7 +10,11 @@ Provide RESTful endpoints to access all the 501c3 organizations information.
 
 ### Getting started
 - Install [go](https://golang.org/) and [dep](https://golang.github.io/dep/docs/installation.html) using methods of your choice.  They are available in most of Linux package repositories.
-- Install [postgres](https://www.postgresql.org/download/).
+- Install [postgres](https://www.postgresql.org/download/) or use Docker:
+```
+docker pull postgres:10-alpine
+docker --rm -p 5432:5432 -e POSTGRES_DB=cms_development postgres:10-alpine
+```
 - Install dependencies `make dep`.
 - Build binary `make build`. All the binaries are in the auto-generated folder `bin/`.
 
@@ -25,16 +29,12 @@ PORT=8001
 PER_PAGE=10
 
 # database connection
-DB_HOST=localhost
-DB_PORT=5432
-DB_USER=postgres
-DB_PASSWORD=
-DB_NAME=development
+DATABASE_URL="postgres://postgres:@localhost:5432/cms_development?sslmode=disable"
 ```
 - Seed database:
   * Download pub78 data at [irs](https://www.irs.gov/charities-non-profits/tax-exempt-organization-search-bulk-data-downloads).
   * Move the `.txt` to `seed/data.txt`.
-  * Run `make seeder`.
+  * Run `data=data.txt make seeder`.
 - Live reload: It will auto build and reload the server as you change source code.
   * Install [fswatch](https://github.com/emcrisostomo/fswatch).
   * Start dev server `make dev`.
@@ -46,7 +46,7 @@ If you would like to use this repo as a dependency and do not care to modify the
   * Make sure you have the DB variables in the `.env` as above.
   * Make sure you have `seed/data.txt` as above.
   * Launch `docker-compose up`
-  * Seed `docker exec -it charity-management-serv_api_1 make seeder`
+  * Seed `docker exec -e data=data.txt charity-management-serv_api_1 make seeder`
 
 
 ### Linting

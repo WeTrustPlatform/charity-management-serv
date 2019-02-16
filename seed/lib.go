@@ -80,6 +80,8 @@ func Populate(dbInstance *gorm.DB, filename string, dryRun bool) {
 			)
 
 			dbInstance.Where(whereCondition).Assign(updatedValue).FirstOrCreate(&charity)
+		} else {
+			fmt.Println("Dryrun mode. Do nothing.")
 		}
 
 		// just print out the charity struct for dryRun

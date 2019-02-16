@@ -1,7 +1,6 @@
 package db
 
 import (
-	"fmt"
 	"log"
 	"time"
 
@@ -17,17 +16,7 @@ var dbInstance *gorm.DB
 // and return the DB instance
 func Connect(retry bool) *gorm.DB {
 
-	var (
-		dbHost     = util.GetEnv("DB_HOST", "localhost")
-		dbPort     = util.GetEnv("DB_PORT", "5432")
-		dbUser     = util.GetEnv("DB_USER", "postgres")
-		dbPassword = util.GetEnv("DB_PASSWORD", "")
-		dbName     = util.GetEnv("DB_NAME", "development")
-	)
-
-	psqlConnectionString := fmt.Sprintf("host=%s port=%s user=%s "+
-		"password=%s dbname=%s sslmode=disable",
-		dbHost, dbPort, dbUser, dbPassword, dbName)
+	psqlConnectionString := util.GetEnv("DATABASE_URL", "postgres://postgres:@localhost:5432/cms_development?sslmode=disable")
 
 	for {
 		var err error

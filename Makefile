@@ -23,7 +23,7 @@ dev: build-server
 launch:
 	./$(BINARY_SERVER)
 seeder: build-seeder
-	./$(BINARY_SEEDER)
+	./$(BINARY_SEEDER) -data $(data)
 dep:
 	dep ensure
 lint:

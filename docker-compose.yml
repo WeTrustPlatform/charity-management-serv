@@ -7,10 +7,10 @@ services:
     env_file:
       - ".env"
     environment:
-      - DB_HOST=postgres
+      - DATABASE_URL=postgres://postgres:@postgres:5432/cms_development?sslmode=disable
   postgres:
     image: "postgres:10-alpine"
-    env_file:
-      - ".env"
+    environment:
+      - POSTGRES_DB=cms_development
     volumes:
       - ./postgres-data:/var/lib/postgresql/data
