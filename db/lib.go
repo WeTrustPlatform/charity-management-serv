@@ -40,7 +40,7 @@ func Connect(retry bool) *gorm.DB {
 	dbInstance.Exec(`
 		UPDATE charities
 		SET tsv = setweight(to_tsvector(name), 'A')
-		|| setweight(to_tsvector(ein), 'B')
+		|| setweight(to_tsvector(staking_id), 'B')
 		|| setweight(to_tsvector(city), 'C')
 		|| setweight(to_tsvector(state), 'D')
 		;

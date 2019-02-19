@@ -17,19 +17,22 @@ import (
 // Contain data fields provided by Publication 78 Data
 // https://www.irs.gov/charities-non-profits/tax-exempt-organization-search-bulk-data-downloads
 type Charity struct {
-	ID                uint64     `gorm:"primary_key" json:"id,omitempty"`
-	CreatedAt         time.Time  `json:"created_at,omitempty"`
-	UpdatedAt         time.Time  `json:"updated_at,omitempty"`
-	DeletedAt         *time.Time `json:"deleted_at,omitempty"`
-	Name              string     `json:"name,omitempty" gorm:"index"`                // pub78
-	City              string     `json:"city,omitempty"`                             // pub78
-	State             string     `json:"state,omitempty"`                            // pub78
-	Country           string     `json:"country,omitempty"`                          // pub78
-	EIN               string     `json:"ein,omitempty" gorm:"not null;unique_index"` // pub78
-	DeductibilityCode string     `json:"deductibility_code,omitempty"`               // pub78
-	Website           string     `json:"website,omitempty"`                          // optional
-	Address           string     `json:"address,omitempty"`                          // optional
-	ContactInfo       string     `json:"contact_info,omitempty"`                     // optional
+	ID        uint64     `gorm:"primary_key" json:"id,omitempty"`
+	CreatedAt time.Time  `json:"created_at,omitempty"`
+	UpdatedAt time.Time  `json:"updated_at,omitempty"`
+	DeletedAt *time.Time `json:"deleted_at,omitempty"`
+	Name      string     `json:"name,omitempty" gorm:"index"` // pub78
+	City      string     `json:"city,omitempty"`              // pub78
+	State     string     `json:"state,omitempty"`             // pub78
+	Country   string     `json:"country,omitempty"`           // pub78
+	// Spring Staking ID or pub78 EIN
+	StakingID         string `json:"staking_id,omitempty" gorm:"not null;unique_index"`
+	DeductibilityCode string `json:"deductibility_code,omitempty"` // pub78
+	Website           string `json:"website,omitempty"`            // optional
+	Address           string `json:"address,omitempty"`            // optional
+	ContactInfo       string `json:"contact_info,omitempty"`       // optional
+	IsOnSpring        string `json:"is_on_spring" gorm:"default:false"`
+	Is501c3           string `json:"is_501c3" gorm:"default:true"`
 }
 
 // GetCharities returns all charities in the http response
@@ -40,13 +43,13 @@ func GetCharities(w http.ResponseWriter, r *http.Request) {
 		page = "1"
 	}
 
-	// if query has ein
+	// if query has staking_id
 	// then return the exact match of ein
 	// and ignore the rest queries
-	ein := query.Get("ein")
-	if len(ein) > 0 {
+	stakingID := query.Get("staking_id")
+	if len(stakingID) > 0 {
 		var charity Charity
-		if dbInstance.Where("EIN = ?", ein).First(&charity).RecordNotFound() {
+		if dbInstance.Where("staking_id = ?", stakingID).First(&charity).RecordNotFound() {
 			http.NotFound(w, r)
 			return
 		}

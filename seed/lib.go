@@ -21,7 +21,7 @@ func ParseCharity(line []string) (*db.Charity, error) {
 	}
 
 	charity := db.Charity{
-		EIN:               line[0],
+		StakingID:         line[0],
 		Name:              line[1],
 		City:              line[2],
 		State:             line[3],
@@ -67,14 +67,14 @@ func Populate(dbInstance *gorm.DB, filename string, dryRun bool) {
 
 		if !dryRun {
 			var (
-				whereCondition = db.Charity{EIN: charity.EIN}
+				whereCondition = db.Charity{StakingID: charity.StakingID}
 				// all the required fields available in pub78
 				updatedValue = db.Charity{
 					Name:              charity.Name,
 					City:              charity.City,
 					State:             charity.State,
 					Country:           charity.Country,
-					EIN:               charity.EIN,
+					StakingID:         charity.StakingID,
 					DeductibilityCode: charity.DeductibilityCode,
 				}
 			)

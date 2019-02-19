@@ -49,13 +49,13 @@ func TestSearchNotFound(t *testing.T) {
 }
 
 func TestEINFound(t *testing.T) {
-	req, _ := http.NewRequest("GET", "/api/v0/charities?ein=000587764", nil)
+	req, _ := http.NewRequest("GET", "/api/v0/charities?staking_id=000587764", nil)
 	res := execute(req)
 	checkResponseCode(t, http.StatusOK, res.Code)
 }
 
 func TestEINNotFound(t *testing.T) {
-	req, _ := http.NewRequest("GET", "/api/v0/charities?ein=000000", nil)
+	req, _ := http.NewRequest("GET", "/api/v0/charities?staking_id=000000", nil)
 	res := execute(req)
 	checkResponseCode(t, http.StatusNotFound, res.Code)
 }
