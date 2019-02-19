@@ -5,7 +5,7 @@ Work-in-progress
 
 
 ### Overview
-Provide RESTful endpoints to access all the 501c3 organizations information.
+Provide RESTful endpoints to access all the 501c3 organizations information and projects on spring.wetrust.io
 
 
 ### Getting started
@@ -80,7 +80,7 @@ ssl_certificate_id = <get cert for your domain via AWS ACM. Make sure it in the 
 ```
 terraform apply
 ```
-- When you want to deploy the latest containers:
+- To deploy the latest containers:
 ```
 terraform taint null_resource.provision_cms // this is for charity-management-serv
 terraform taint null_resource.provision_web // this is for staking-dapp front-end
