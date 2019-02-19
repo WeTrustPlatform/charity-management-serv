@@ -27,3 +27,18 @@ func GetEnv(key, fallback string) string {
 func LogError(err error) {
 	fmt.Println(err)
 }
+
+// CommitID injected during make build
+var CommitID string
+
+// VersionInfo expose git commit id
+type VersionInfo struct {
+	CommitID string `json:"commit_id"`
+}
+
+// GetVersion returns the current git commit
+func GetVersion() VersionInfo {
+	return VersionInfo{
+		CommitID: CommitID,
+	}
+}

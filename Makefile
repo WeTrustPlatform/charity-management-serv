@@ -6,10 +6,11 @@ GOGET := $(GOCMD) get
 BUILT := bin
 BINARY_SERVER := $(BUILT)/cms-server
 BINARY_SEEDER := $(BUILT)/cms-seeder
+GIT_COMMIT := $(shell echo `git rev-parse HEAD`)
 
 all: test lint build
 build-server:
-	$(GOBUILD) -o ./$(BINARY_SERVER) ./cmd/server/main.go
+	$(GOBUILD) -o ./$(BINARY_SERVER) -ldflags "-X github.com/WeTrustPlatform/charity-management-serv/util.CommitID=$(GIT_COMMIT)" ./cmd/server/main.go
 build-seeder:
 	$(GOBUILD) -o ./$(BINARY_SEEDER) ./cmd/seeder/main.go
 build: build-server build-seeder

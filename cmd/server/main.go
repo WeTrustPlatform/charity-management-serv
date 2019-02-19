@@ -1,6 +1,7 @@
 package main
 
 import (
+	"encoding/json"
 	"log"
 	"net/http"
 
@@ -17,6 +18,7 @@ func Router() *mux.Router {
 	router := mux.NewRouter()
 	router.HandleFunc(root+"/charities", db.GetCharities).Methods("GET")
 	router.HandleFunc(root+"/charities/{id}", db.GetCharity).Methods("GET")
+	router.HandleFunc("/version", GetVersion).Methods("GET")
 	return router
 }
 
@@ -37,6 +39,14 @@ func CorsPolicy() *cors.Cors {
 		AllowedHeaders: []string{"*"},
 	})
 	return corsPolicy
+}
+
+// GetVersion REST endpoint to return current commit id
+func GetVersion(w http.ResponseWriter, r *http.Request) {
+	version := util.GetVersion()
+	if err := json.NewEncoder(w).Encode(version); err != nil {
+		util.LogError(err)
+	}
 }
 
 func main() {
