@@ -372,7 +372,7 @@ module "db" {
   source            = "terraform-aws-modules/rds/aws"
   identifier        = "${var.app_name}"
   engine            = "postgres"
-  engine_version    = "10.4"
+  engine_version    = "10.6"
   instance_class    = "db.t2.small"
   allocated_storage = 10
   storage_type      = "gp2"
