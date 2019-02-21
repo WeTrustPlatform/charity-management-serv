@@ -10,13 +10,18 @@ Provide RESTful endpoints to access all the 501c3 organizations information and 
 
 ### Getting started
 - Install [go](https://golang.org/) and [dep](https://golang.github.io/dep/docs/installation.html) using methods of your choice.  They are available in most of Linux package repositories.
-- Install [postgres](https://www.postgresql.org/download/) or use Docker:
+- Clone this repo to $GO_PATH/src/github.com/WeTrustPlatform/charity-management-serv
+- Install dependencies `make dep`.
+- Build binary `make build`. All the binaries are in the auto-generated folder `bin/`.
+- Install and launch [postgres](https://www.postgresql.org/download/) or use Docker:
 ```
 docker pull postgres:10-alpine
 docker --rm -p 5432:5432 -e POSTGRES_DB=cms_development postgres:10-alpine
 ```
-- Install dependencies `make dep`.
-- Build binary `make build`. All the binaries are in the auto-generated folder `bin/`.
+- Launch server
+```
+make launch
+```
 
 
 ### Making dev life easier
@@ -43,7 +48,6 @@ DATABASE_URL="postgres://postgres:@localhost:5432/cms_development?sslmode=disabl
 
 ### Docker
 If you would like to use this repo as a dependency and do not care to modify the code, then you can get it up running quickly by using [docker-compose](https://docs.docker.com/compose/).
-  * Make sure you have the DB variables in the `.env` as above.
   * Make sure you have `seed/data.txt` as above.
   * Launch `docker-compose up`
   * Seed `docker exec -e data=data.txt charity-management-serv_api_1 make seeder`
@@ -56,7 +60,7 @@ If you would like to use this repo as a dependency and do not care to modify the
 - [vim-go](https://github.com/fatih/vim-go) runs `gofmt` on save by default. If you like it to run `goimports` instead, please refer to https://github.com/fatih/vim-go/issues/207
 
 
-### Deployment
+### Setting up infrastructure
 - Use [terraform](https://www.terraform.io/) to provise the AWS infra and deploy docker containers.
 - Go to the deployment env i.e. `cd deployment/staging`
 - Configure your `terraform.tfvars` as below:
@@ -80,13 +84,35 @@ ssl_certificate_id = <get cert for your domain via AWS ACM. Make sure it in the 
 ```
 terraform apply
 ```
-- To deploy the latest containers:
+
+
+### Release
+This app uses Docker and Terraform for deployment. The images need to be created and published first.
+
+- To create and publish latest image:
 ```
+./docker.sh
+```
+
+- To create, publish image and tag release:
+```
+./docker.sh v1.1.0
+```
+
+- Manually push git tags to remote:
+```
+git push origin,upstream --tags
+```
+
+- To deploy the latest docker images to staging:
+```
+cd deployment/staging
 terraform taint null_resource.provision_cms // this is for charity-management-serv
 terraform taint null_resource.provision_web // this is for staking-dapp front-end
 
 terraform apply
 ```
+
 
 ### License
 [GPL-3.0](https://www.gnu.org/licenses/gpl-3.0.txt) &copy; WeTrustPlatform
