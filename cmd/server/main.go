@@ -18,7 +18,7 @@ func Router() *mux.Router {
 	router := mux.NewRouter()
 	router.HandleFunc(root+"/charities", db.GetCharities).Methods("GET")
 	router.HandleFunc(root+"/charities/{id}", db.GetCharity).Methods("GET")
-	router.HandleFunc("/version", GetVersion).Methods("GET")
+	router.HandleFunc(root+"/version", GetVersion).Methods("GET")
 	return router
 }
 
