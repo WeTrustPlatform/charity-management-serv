@@ -6,7 +6,9 @@ GOGET := $(GOCMD) get
 BUILT := bin
 BINARY_SERVER := $(BUILT)/cms-server
 BINARY_SEEDER := $(BUILT)/cms-seeder
-GIT_COMMIT := $(shell echo `git rev-parse HEAD`)
+ifndef GIT_COMMIT
+	GIT_COMMIT := $(shell echo `git rev-parse HEAD`)
+endif
 
 all: test lint build
 build-server:
