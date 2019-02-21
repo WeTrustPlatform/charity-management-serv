@@ -67,7 +67,7 @@ func TestGetCharity(t *testing.T) {
 }
 
 func TestGetCharityNotFound(t *testing.T) {
-	req, _ := http.NewRequest("GET", "/api/v0/charities/4", nil)
+	req, _ := http.NewRequest("GET", "/api/v0/charities/1000", nil)
 	res := execute(req)
 	checkResponseCode(t, http.StatusNotFound, res.Code)
 }
