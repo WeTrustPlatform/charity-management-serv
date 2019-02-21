@@ -6,6 +6,7 @@
 # will build and publish 2 tags
 # sihoang/charity-management-serv:latest
 # and sihoang/charity-management-serv:v1.1.0
+# it also calls `git tag <tagname>`
 
 DOCKER_REPO="sihoang/charity-management-serv"
 DOCKER_IMAGE="$DOCKER_REPO:latest"
@@ -24,6 +25,7 @@ if [ -z "$1" ]; then
   exit 0
 else
   echo ">> Tag $1"
+  git tag $1
   DOCKER_TAG="$DOCKER_REPO:$1"
   docker tag $DOCKER_IMAGE $DOCKER_TAG
   echo ">> Pushing tag $DOCKER_TAG to registry"
