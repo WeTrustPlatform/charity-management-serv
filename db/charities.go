@@ -32,7 +32,7 @@ type Charity struct {
 	Address           string `json:"address,omitempty"`            // optional
 	ContactInfo       string `json:"contact_info,omitempty"`       // optional
 	IsOnSpring        bool   `json:"is_on_spring" gorm:"default:false"`
-	Is501c3           bool   `json:"is_501c3" gorm:"default:true"`
+	Is501c3           bool   `json:"is_501c3" gorm:"default:false"`
 }
 
 // GetCharities returns all charities in the http response
