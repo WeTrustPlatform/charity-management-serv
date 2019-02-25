@@ -8,7 +8,6 @@ import (
 	"os"
 	"path/filepath"
 	"runtime"
-	"strconv"
 
 	"github.com/WeTrustPlatform/charity-management-serv/db"
 	"github.com/jinzhu/gorm"
@@ -36,14 +35,13 @@ func PopulateCausesFromSpring(dbInstance *gorm.DB, dryRun bool) {
 	}
 
 	for index, value := range result {
-		stakingID := strconv.FormatUint(value.StakingIDNumber, 10)
-		if len(value.Name) == 0 || len(stakingID) == 0 {
+		if len(value.Name) == 0 || len(value.StakingID) == 0 {
 			fmt.Printf("Invalid record at %d. Move on...", index)
 			continue
 		}
 
 		charity := db.Charity{
-			StakingID:  stakingID,
+			StakingID:  value.StakingID,
 			Name:       value.Name,
 			IsOnSpring: true,
 		}

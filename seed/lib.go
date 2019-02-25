@@ -10,8 +10,8 @@ import (
 
 // SpringCause Cause object from spring.wetrust.io
 type SpringCause struct {
-	Name            string `json:"name"`
-	StakingIDNumber uint64 `json:"staking_id"`
+	Name      string `json:"name"`
+	StakingID string `json:"staking_id"`
 }
 
 // ParseCharity constructs Charity from an array of string
