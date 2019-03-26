@@ -7,7 +7,6 @@ import (
 	"net/http"
 	"os"
 	"path/filepath"
-	"runtime"
 
 	"github.com/WeTrustPlatform/charity-management-serv/db"
 	"github.com/jinzhu/gorm"
@@ -64,12 +63,13 @@ func PopulateCausesFromSpring(dbInstance *gorm.DB, dryRun bool) {
 // Populate501c3FromIRS will insert all the records in pub78 to DB.
 // If the record already exists,
 // it will update DB with new values in the pub78 txt
-func Populate501c3FromIRS(dbInstance *gorm.DB, filename string, dryRun bool) {
-	// data file must be in the same folder as seed/lib.go
-	_, thisFile, _, _ := runtime.Caller(0)
-	basePath := filepath.Dir(thisFile)
-	filePath := filepath.Join(basePath, filename)
-	f, err := os.Open(filepath.Clean(filePath))
+func Populate501c3FromIRS(dbInstance *gorm.DB, file string, dryRun bool) {
+	fileWithAbsolutePath, err := filepath.Abs(file)
+	if err != nil {
+		panic(err)
+	}
+
+	f, err := os.Open(filepath.Clean(fileWithAbsolutePath))
 	if err != nil {
 		panic(err)
 	}

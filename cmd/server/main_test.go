@@ -13,7 +13,7 @@ func TestMain(m *testing.M) {
 	dbInstance := DB(false)
 	defer dbInstance.Close()
 
-	seed.Populate(dbInstance, "data_test.txt", false)
+	seed.Populate(dbInstance, "../../seed/data_test.txt", false)
 	code := m.Run()
 	os.Exit(code)
 }

@@ -12,7 +12,7 @@ func main() {
 	flag.BoolVar(&dryRun, "dryrun", false, "dryrun")
 
 	var filename string
-	flag.StringVar(&filename, "data", "data.txt", "name of the data file inside <root>/seed/ folder")
+	flag.StringVar(&filename, "data", "../seed/data.txt", "name of the data file inside <root>/seed/ folder")
 
 	flag.Parse()
 
