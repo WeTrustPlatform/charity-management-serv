@@ -311,21 +311,10 @@ resource "null_resource" "provision_seeder" {
       <<EOF
         sudo docker run \
           --name ${local.cms_seeder_container} \
-          -v ~/:/workdir \
+          -it --rm \
+          -v ~/:/seed \
           --env-file ./${local.cms_env} \
-          -t -d ${var.cms_image} /bin/sh
-      EOF
-      ,
-
-      <<EOF
-        sudo docker cp data-download-pub78.txt \
-          ${local.cms_seeder_container}:/go/src/github.com/WeTrustPlatform/charity-management-serv/seed/data.txt
-      EOF
-      ,
-      <<EOF
-        sudo docker exec \
-          -e data=data.txt \
-          -d ${local.cms_seeder_container} make seeder
+          -t -d ${var.cms_image} cms-seeder -data /seed/data-download-pub78
       EOF
       ,
     ]
@@ -356,7 +345,7 @@ resource "aws_elb" "elb" {
     healthy_threshold   = 2
     unhealthy_threshold = 2
     timeout             = 3
-    target              = "HTTP:80/api/v0/charities"
+    target              = "HTTP:80/"
     interval            = 30
   }
 
