@@ -37,9 +37,8 @@ PER_PAGE=10
 DATABASE_URL="postgres://postgres:@localhost:5432/cms_development?sslmode=disable"
 ```
 - Seed database:
-  * Download pub78 data at [irs](https://www.irs.gov/charities-non-profits/tax-exempt-organization-search-bulk-data-downloads).
-  * Move the `.txt` to `seed/data.txt`.
-  * Run `data=data.txt make seeder`.
+  * Prefer the existing `seed/data_test.txt`. Real data can be downloaded at [irs](https://www.irs.gov/charities-non-profits/tax-exempt-organization-search-bulk-data-downloads).
+  * Run `data=seed/data_test.txt make seeder`.
 - Live reload: It will auto build and reload the server as you change source code.
   * Install [fswatch](https://github.com/emcrisostomo/fswatch).
   * Start dev server `make dev`.
@@ -48,9 +47,8 @@ DATABASE_URL="postgres://postgres:@localhost:5432/cms_development?sslmode=disabl
 
 ### Docker
 If you would like to use this repo as a dependency and do not care to modify the code, then you can get it up running quickly by using [docker-compose](https://docs.docker.com/compose/).
-  * Make sure you have `seed/data.txt` as above.
   * Launch `docker-compose up`
-  * Seed `docker exec -e data=data.txt charity-management-serv_api_1 make seeder`
+  * Seed `docker run -it --rm --network host -v $(pwd)/seed:/seed charity-management-serv_api cms-seeder -data /seed/data_test.txt`
 
 
 ### Linting
