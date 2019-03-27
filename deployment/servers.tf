@@ -312,9 +312,9 @@ resource "null_resource" "provision_seeder" {
         sudo docker run \
           --name ${local.cms_seeder_container} \
           -it --rm \
-          -v ~/:/seed \
+          -v ~/:/workdir \
           --env-file ./${local.cms_env} \
-          -t -d ${var.cms_image} cms-seeder -data /seed/data-download-pub78
+          -t -d ${var.cms_image} cms-seeder -data /workdir/data-download-pub78.txt
       EOF
       ,
     ]
