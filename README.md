@@ -16,7 +16,7 @@ Provide RESTful endpoints to access all the 501c3 organizations information and 
 - Install and launch [postgres](https://www.postgresql.org/download/) or use Docker:
 ```
 docker pull postgres:10-alpine
-docker --rm -p 5432:5432 -e POSTGRES_DB=cms_development postgres:10-alpine
+docker run --rm -p 5432:5432 -e POSTGRES_DB=cms_development postgres:10-alpine
 ```
 - Launch server
 ```
