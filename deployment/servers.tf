@@ -181,7 +181,7 @@ resource "aws_instance" "master" {
   monitoring                  = true
   vpc_security_group_ids      = ["${module.web_server_sg.this_security_group_id}"]
   subnet_id                   = "${module.vpc.public_subnets[0]}"
-  tags                        = "${local.common_tags}"
+  tags                        = "${merge(local.common_tags, map("Name", var.app_name))}"
 }
 
 resource "null_resource" "provision_nginx" {
