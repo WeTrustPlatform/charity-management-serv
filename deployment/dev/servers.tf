@@ -87,10 +87,14 @@ resource "null_resource" "postgres" {
   provisioner "remote-exec" {
     inline = [
       "sudo docker pull postgres:10-alpine",
+      "sudo docker stop postgres || true",
+      "sudo docker rm postgres || true",
+      "sudo docker network create backend-net",
       <<EOF
         sudo docker run \
           --restart always \
           --name postgres \
+          --network backend-net \
           -e POSTGRES_DB=cms_development \
           -p 5432:5432 \
           -v ~/data:/var/lib/postgresql/data \
@@ -167,12 +171,17 @@ resource "null_resource" "cms" {
       "sudo docker pull ${var.cms_image}",
       "sudo docker stop cms1 cms2 || true",
       "sudo docker rm cms1 cms2 || true",
+
+      # create new cms_env file
+      "echo DATABASE_URL=postgres://postgres:@postgres:5432/cms_development?sslmode=disable > ~/.cms_env",
+
       <<EOF
         sudo docker run \
           --restart always \
           --name cms1 \
-          --network host \
+          --network backend-net \
           -e PORT=8001 \
+          --env-file ~/.cms_env \
           -p 8001:8001 \
           -v ~/:/workdir \
           -d ${var.cms_image}
@@ -182,8 +191,9 @@ resource "null_resource" "cms" {
         sudo docker run \
           --restart always \
           --name cms2 \
-          --network host \
+          --network backend-net \
           -e PORT=8002 \
+          --env-file ~/.cms_env \
           -p 8002:8002 \
           -v ~/:/workdir \
           -d ${var.cms_image}
