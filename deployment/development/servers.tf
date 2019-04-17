@@ -1,3 +1,21 @@
+# This sets up a staking-dapp instance from scratch
+# Assume the host OS is hardened and can be remotely ssh'ed
+# from the instance running this terraform file.
+
+## Topology
+# Public ==> Cloudflare ==> This instance
+# The nginx reversed proxy servs the following:
+# 1. mainnet web
+# 2. testnet web
+# 3. 2 processes of charity-management-serv
+
+## Database
+# Data is persistent and stored at ~/data on the same instance
+
+## Notes
+# Avoid modifying docker container names
+# as it's usually hard-coded on multiple different lines
+
 variable "remote_host" {}
 variable "remote_user" {}
 variable "private_key" {}
@@ -24,8 +42,8 @@ locals {
 }
 
 resource "null_resource" "nginx" {
-  // cannot re-use local.connection
-  // https://github.com/hashicorp/terraform/issues/8616
+  # cannot re-use local.connection
+  # https://github.com/hashicorp/terraform/issues/8616
   connection = {
     host        = "${local.connection["host"]}"
     user        = "${local.connection["user"]}"
