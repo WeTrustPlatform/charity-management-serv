@@ -21,4 +21,5 @@ func main() {
 	dbInstance.AutoMigrate(&db.Charity{})
 
 	seed.Populate(dbInstance, filename, dryRun)
+	db.UpdateSearchIndex(dbInstance)
 }

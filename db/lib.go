@@ -35,7 +35,14 @@ func Connect(retry bool) *gorm.DB {
 
 	dbInstance.AutoMigrate(&Charity{})
 
-	// Custom queries those are not supported by Gorm
+	return dbInstance
+}
+
+// UpdateSearchIndex updates the charities table with new keywords
+// This operation will take a while
+// So it's better to run by the seeder instead of server
+func UpdateSearchIndex(dbInstance *gorm.DB) {
+	// Use custom queries as those are not abstracted in Gorm
 	dbInstance.Exec("ALTER TABLE charities ADD COLUMN IF NOT EXISTS tsv tsvector;")
 	dbInstance.Exec(`
 		UPDATE charities
@@ -46,5 +53,4 @@ func Connect(retry bool) *gorm.DB {
 		;
 		`)
 	dbInstance.Exec("CREATE INDEX IF NOT EXISTS ix_charities_tsv ON charities USING GIN(tsv);")
-	return dbInstance
 }
