@@ -193,6 +193,7 @@ resource "null_resource" "cms" {
       # create new cms_env file
       "echo DATABASE_URL=postgres://postgres:@postgres:5432/cms_development?sslmode=disable > ~/.cms_env",
 
+      "echo ALLOWED_ORIGIN=\"*\" >> ~/.cms_env",
       <<EOF
         sudo docker run \
           --restart always \
@@ -201,7 +202,6 @@ resource "null_resource" "cms" {
           -e PORT=8001 \
           --env-file ~/.cms_env \
           -p 8001:8001 \
-          -v ~/:/workdir \
           -d ${var.cms_image}
       EOF
       ,
@@ -213,7 +213,6 @@ resource "null_resource" "cms" {
           -e PORT=8002 \
           --env-file ~/.cms_env \
           -p 8002:8002 \
-          -v ~/:/workdir \
           -d ${var.cms_image}
       EOF
       ,
