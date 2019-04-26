@@ -8,7 +8,7 @@ psql $DATABASE_URL
 
 - Manually seed on development instance:
 ```
-sudo docker run -it --rm -d --network backend-net --env-file ./cms_env -v ~/seed:/seed sihoang/charity-management-serv cms-seeder -data /seed/data-download-pub78.txt
+sudo docker run -it --rm -d --network backend-net --env-file ./.cms_env -v ~/seed:/seed sihoang/charity-management-serv cms-seeder -data /seed/data-download-pub78.txt
 ```
 Notes: Make sure to download data to `~/seed` folder in advance
 ```
