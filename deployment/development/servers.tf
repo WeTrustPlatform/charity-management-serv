@@ -89,6 +89,7 @@ resource "null_resource" "docker" {
       "sudo add-apt-repository \"deb [arch=amd64] https://download.docker.com/linux/debian $(lsb_release -cs) stable\"",
       "sudo apt-get update",
       "sudo apt-get install -y docker-ce docker-ce-cli containerd.io",
+      "sudo docker volume create --name postgres-data",
     ]
   }
 }
@@ -114,8 +115,7 @@ resource "null_resource" "postgres" {
           --name postgres \
           --network backend-net \
           -e POSTGRES_DB=cms_development \
-          -p 5432:5432 \
-          -v ~/data:/var/lib/postgresql/data \
+          --mount source=postgres-data,destination=/var/lib/postgresql/data \
           -d postgres:10-alpine
       EOF
       ,
